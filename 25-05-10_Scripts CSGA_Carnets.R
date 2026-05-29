@@ -23,29 +23,29 @@ if (researcher == "adenieul") {
   setwd(paste0("C:/Users/",researcher,"/Owncloud/TI Dijon/donnees"))
 }
 resultats_codachats <- read_excel(
-  path  = "Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
+  path  = "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
   sheet = "Table_appli"
 )
 
 #DONNEES CORRIGEES FFQ
 CSGA_FFQ <- read_excel(
-  path  = "Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx",
+  path  = "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx",
   sheet = "Frequences_corrigées"
 )
 
 CSGA_FFQ_id <- read_excel(
-  path  = "Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx",
+  path  = "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx",
 )
 
 describe(is.na(resultats_codachats$Prix_detail_VF))
 describe(is.na(resultats_codachats$Prix_global_VF))
 ### Importation des données des tableaux annexes ----------------
-CALNUT<- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_CARNET.xlsx")
-magasins <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_magasins.xlsx")
+CALNUT<- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_CARNET.xlsx")
+magasins <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_magasins.xlsx")
 
-resultats_pondérés <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/moyennes_pondérées.xlsx")
-Poids_unitaires_manquants <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/poids_unitaire_manquants.xlsx")
-resultats_pondérés <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/resultats_pondérés.xlsx")
+resultats_pondérés <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/moyennes_pondérées.xlsx")
+Poids_unitaires_manquants <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/poids_unitaire_manquants.xlsx")
+resultats_pondérés <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/resultats_pondérés.xlsx")
 
 # NETTOYAGE DU FICHIER COD_ACHATS : LIEUX / DATES / LIBELLE_CUSTOM / LIBELLE_CIQUAL-----------------
 resultats_codachats$Date <- as.Date(
@@ -108,11 +108,7 @@ colnames(resultats_codachats)[colnames(resultats_codachats) == 'groupe_TI_TdC'] 
 names(resultats_codachats)[9] <- "Unite"
 names(resultats_codachats)[26] <- "LibelleCIQUAL"
 
-#Supprimer les catégories incomparables
-resultats_codachats <- subset(
-  resultats_codachats,
-  !groupe_TI_TdC1 %in% c("CAFE_THE", "EPICES_CONDIMENTS", "MGV",  "PLATS_PREP_VEGETARIENS")
-)
+
 
 resultats_codachats$groupe_TI_TdC1[resultats_codachats$groupe_TI_TdC1 == "JAMBON_BLANC"] <- "CHARCUTERIE_HORS_JB"
 
@@ -691,6 +687,14 @@ resultats_codachats<- resultats_codachats%>%
   filter(!Identifiant %in% identifiants_alerte )
 
 
+
+#Supprimer les catégories incomparables
+resultats_codachats <- subset(
+  resultats_codachats,
+  !groupe_TI_TdC1 %in% c( "EPICES_CONDIMENTS", "MGV",  "PLATS_PREP_VEGETARIENS")
+) 
+
+
 # IMPUTATION  DES DONNEES NUTRITIONNELLE ET ENVIRONNEMENTALES -----------------
   ##Agrégation des variables d'intérêt par groupe_TI_TdC à partir du dataframe CALNUT----------
 resultats_codachats$Unite <- ifelse(is.na(resultats_codachats$Unite),(resultats_codachats$Unite=="unités"), (resultats_codachats$Unite))
@@ -725,187 +729,25 @@ resultats_codachats$UC_TI <- 1
 #Pour lier les quantités COD-Appro et FFQ, il faut systématiquement multiplier 
 #le poids des fournitures par yield_factor*pct_conso : 
 #On obtient ainsi le poids consommé pour les carnets de fournitures. 
+#Pour lier les quantités COD-Appro et FFQ, il faut systématiquement multiplier 
+#le poids des fournitures par yield_factor*pct_conso : 
+#On obtient ainsi le poids consommé pour les carnets de fournitures. 
 resultats_codachats$Poids_consomme_vf <- ifelse((resultats_codachats$Lieu2 != "RHD"),(resultats_codachats$Poids_vf*resultats_codachats$yield_factor*resultats_codachats$pct_conso),(resultats_codachats$Poids_vf))
-resultats_codachats$Poids_consomme_CSGA <- ifelse((is.na(resultats_codachats$PoidsRHD)),(resultats_codachats$Poids_VF*resultats_codachats$yield_factor*resultats_codachats$pct_conso),(resultats_codachats$PoidsRHD))
-
-## Verification du prix au kg des données imputées = ---------------------------
-
-
 resultats_codachats$kcal_aliment_vf <- resultats_codachats$nrj_kcal*10*resultats_codachats$Poids_consomme_vf
 
 
-###POIDS PAR SEMAINE -----------------------------------------------------------------------
-
-resultats_codachats$Date <- as.Date(
-  resultats_codachats$Date,
-  format = "%Y-%m-%d"
-)
-
-resultats_codachats <- resultats_codachats %>%
-  group_by(Identifiant) %>% 
-  mutate(
-    date_starting = min(Date, na.rm = TRUE)
-  ) %>%
-  ungroup()
+#Conversion 
+#https://www.femobook.com/blogs/coffee-knowledge/a-guide-to-the-golden-cup-standard?
+#55 g de café pour 1 L d’eau
+#The ISO 3103 (2g de the pour 1L d'eau)
+#resultats_codachats$nrj_kcal <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$Poids_vf*resultats_codachats$Sec_Vol),(resultats_codachats$Poids_vf))
 
 
+resultats_codachats$Poids_consomme_vf <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$Poids_vf*resultats_codachats$Sec_Vol),(resultats_codachats$Poids_consomme_vf))
+resultats_codachats_CAFE_THE <- resultats_codachats %>%
+  filter(groupe_TI_TdC1 == "CAFE_THE")
 
-resultats_codachats$jour_num <- 
-  as.numeric(resultats_codachats$Date - resultats_codachats$date_starting) + 1
-table(resultats_codachats$jour_num)
-
-
-# Calcul de la semaine relative
-resultats_codachats$semaine_num <- floor(as.numeric(resultats_codachats$Date - resultats_codachats$date_starting) / 7) + 1
-# Plafonner à 4
-resultats_codachats$semaine_num <- pmin(resultats_codachats$semaine_num, 4)
-tab <- table(resultats_codachats$semaine_num)
-
-pct <- prop.table(tab) * 100
-round(pct, 1)
-sem1 <- resultats_codachats %>% filter(semaine_num == 1)
-sem2 <- resultats_codachats %>% filter(semaine_num == 2)
-sem3 <- resultats_codachats %>% filter(semaine_num == 3)
-sem4 <- resultats_codachats %>% filter(semaine_num == 4)
-
-
-# — Pré-calcul global (Poids_consomme_vf + Prix_Kg_post_imput) —
-
-# On récupère la liste des semaines présentes
-semaines <- sort(unique(resultats_codachats$semaine_num))
-
-for (sem in semaines) {
-  message(">>> Traitement de la semaine ", sem)
-  # 1) On découpe le sous-jeu de données
-  df_sem <- subset(resultats_codachats, semaine_num == sem)
-  
-  # ——————— Poids (Kg/personne/jour) ———————
-  # Création de Nourriture_consommee
-  Nourriture_consommee <- data.frame(
-    Identifiant        = df_sem$Identifiant,
-    groupe_TI_TdC      = df_sem$groupe_TI_TdC1,
-    Poids_vf_consommee = df_sem$Poids_consomme_vf
-  )
-  # colonnes par catégorie
-  categories <- unique(Nourriture_consommee$groupe_TI_TdC)
-  for (categorie in categories) {
-    col <- paste0(categorie, "_CARNET")
-    Nourriture_consommee[[col]] <- ifelse(
-      Nourriture_consommee$groupe_TI_TdC == categorie,
-      Nourriture_consommee$Poids_vf_consommee,
-      0
-    )
-  }
-  # on supprime les anciennes colonnes
-  Nourriture_consommee <- subset(
-    Nourriture_consommee,
-    select = -c(groupe_TI_TdC, Poids_vf_consommee, NA_CARNET)
-  )
-  
-  # Agrégation Carnet_POIDS
-  library(dplyr)
-  library(ggplot2)
-  library(tidyr)
-  
-  # UC_TI moyen par Identifiant
-  Carnet_POIDS <- aggregate(UC_TI ~ Identifiant, df_sem, mean)
-  # agrégation de chaque colonne « *_CARNET »
-  colonnes_poids <- names(Nourriture_consommee)[-1]
-  for (colonne in colonnes_poids) {
-    Temp <- aggregate(
-      formula(paste0(colonne, " ~ Identifiant")),
-      data = Nourriture_consommee,
-      FUN  = sum
-    )
-    Carnet_POIDS <- left_join(Carnet_POIDS, Temp, by = "Identifiant")
-  }
-  Carnet_POIDS$AUTRE_CARNET <- NULL
-  
-  # normalisation par UC_TI * 7
-  Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <-
-    Carnet_POIDS[, 3:ncol(Carnet_POIDS)] /
-    (Carnet_POIDS$UC_TI *7 )
-  
-  Carnet_POIDS$SOMME_CARNET_POIDS <- rowSums(
-    Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE
-  )
-  Carnet_POIDS$SOMME_CARNET_HORS_BOISSON <- with(
-    Carnet_POIDS,
-    SOMME_CARNET_POIDS -
-      ALCOOL_CARNET -
-      FRUITS_JUS_CARNET -
-      LAIT_CARNET -
-      SODAS_LIGHT_CARNET -
-      SODAS_SUCRES_CARNET
-  )
-  assign(paste0("Carnet_POIDS_sem", sem), Carnet_POIDS)
-  
-  # On renomme toutes les colonnes sauf Identifiant
-  Carnet_POIDS <- Carnet_POIDS %>%
-    rename_with(~ paste0(.x, "_sem", sem), -Identifiant)
-  
-  # on crée l’objet Carnet_POIDS_sem1, _sem2, …
-  assign(paste0("Carnet_POIDS_sem", sem), Carnet_POIDS)
-  
-}
-
-###Par jour -------------------
-resultats_codachats$jour_num <- floor(as.numeric(resultats_codachats$Date - resultats_codachats$date_starting) + 1)
-tab <- table(resultats_codachats$jour_num)
-#Les identifiants qui dépassent 29 sont ceux qui ont pris des vacances
-
-pct <- prop.table(tab) * 100
-round(pct, 1)
-
-identifiants_30_plus <- resultats_codachats %>%
-  filter(jour_num > 29) %>%      # on ne garde que les jours au-delà de 29
-  distinct(Identifiant) %>%      # on sélectionne les identifiants uniques
-  arrange(Identifiant)    
-
-
-print(unique(identifiants_30_plus$Identifiant))
-# 1) Prendre en compte UC_TI et sommer par ID × catégorie × jour
-
-tab_cumul_cat_norm <- resultats_codachats %>%
-  # 1) Remplir UC_TI manquants par Identifiant
-  group_by(Identifiant) %>%
-  fill(UC_TI, .direction = "downup") %>%
-  ungroup() %>%
-  
-  # 2) Somme des poids journaliers par catégorie
-  group_by(Identifiant,
-           categorie = groupe_TI_TdC1,
-           jour_num,
-           UC_TI) %>%
-  summarise(poids_jour = sum(Poids_consomme_vf, na.rm = TRUE),
-            .groups = "drop") %>%
-  
-  # 3) Ne garder que les jours 1 à 29
-  filter(jour_num <= 29) %>%
-  
-  # 4) Compléter les jours manquants 1–29 à 0
-  complete(
-    Identifiant, categorie,
-    jour_num = 1:29,
-    fill = list(poids_jour = 0)
-  ) %>%
-  arrange(Identifiant, categorie, jour_num) %>%
-  
-  # 5) Calcul du cumul par catégorie
-  group_by(Identifiant, categorie) %>%
-  mutate(cumul_cat = cumsum(poids_jour)) %>%
-  ungroup()
-
-tab_cumul_cat_norm <- tab_cumul_cat_norm %>%
-  filter(jour_num <= 29)
-
-tab_cumul_cat_norm <- tab_cumul_cat_norm %>%
-  group_by(Identifiant) %>%
-  fill(UC_TI, .direction = "downup") %>%
-  ungroup()
-
-tab_cumul_cat_norm$poids_jour <- tab_cumul_cat_norm$poids_jour / tab_cumul_cat_norm$UC_TI
-tab_cumul_cat_norm$cumul_cat <- tab_cumul_cat_norm$cumul_cat / tab_cumul_cat_norm$UC_TI
+resultats_codachats$kcal_aliment_vf <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$kcal_aliment_vf/ resultats_codachats$Sec_Vol),(resultats_codachats$kcal_aliment_vf))
 
 ###POIDS GENERAL ------------------------
 Nourriture_consommee <- data.frame(resultats_codachats$Identifiant, resultats_codachats$groupe_TI_TdC1, resultats_codachats$Poids_consomme_vf  )
@@ -916,7 +758,7 @@ names(Nourriture_consommee)[1:3] = c("Identifiant", "groupe_TI_TdC","Poids_vf_co
 categories <- unique(Nourriture_consommee$groupe_TI_TdC)
 # Boucle pour créer les colonnes correspondantes dans Nourriture_consommee
 for (categorie in categories) {
-  Nourriture_consommee[[paste0(categorie, "_CARNET")]] <- ifelse(Nourriture_consommee$groupe_TI_TdC == categorie, Nourriture_consommee$Poids_vf_consomme, 0)}
+  Nourriture_consommee[[paste0(categorie, "_CARNET")]] <- ifelse(Nourriture_consommee$groupe_TI_TdC == categorie, Nourriture_consommee$Poids_vf_consommee, 0)}
 # Supprimer les colonnes "groupe_TI_TdC" et "Poids_vf_consomme" si besoin
 Nourriture_consommee <- subset(Nourriture_consommee, select = -c(groupe_TI_TdC, Poids_vf_consommee, NA_CARNET))
 # Agrégation pour le dataframe Carnet_POIDS
@@ -933,59 +775,33 @@ Carnet_POIDS$AUTRE_CARNET <- NULL
 
 # Diviser les colonnes par la colonne UC multipliée par le nombre de jour de saisie
 Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <- Carnet_POIDS[, 3:NCOL(Carnet_POIDS)] / (Carnet_POIDS$UC_TI*Nj)
-#Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <- Carnet_POIDS[, 3:NCOL(Carnet_POIDS)] / (Carnet_POIDS$Combien.de.personnes.vivent.dans.votre.foyer*Nj)
 # Calculer la somme des colonnes pour chaque ligne
-Carnet_POIDS$SOMME_CARNET_POIDS <- rowSums(Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE)
+Carnet_POIDS$POIDS_TOTAL_CARNET <- rowSums(Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE)
 # Calculer la somme des colonnes hors boisson
-Carnet_POIDS$SOMME_CARNET_HORS_BOISSON <- with(Carnet_POIDS, SOMME_CARNET_POIDS - 
+Carnet_POIDS$POIDS_HORS_BOISSON_CARNET <- with(Carnet_POIDS, POIDS_TOTAL_CARNET - 
                                                  ALCOOL_CARNET - 
                                                  FRUITS_JUS_CARNET - 
                                                  LAIT_CARNET - 
                                                  EAU_CARNET - 
                                                  SODAS_LIGHT_CARNET - 
-                                                 SODAS_SUCRES_CARNET)
+                                                 SODAS_SUCRES_CARNET -
+                                                 CAFE_THE_CARNET)
 
 
-##CARNET_POIDS_TRAITEMENT_CSGA-----------------------------
-Nourriture_consommee_CSGA <- data.frame(resultats_codachats$Identifiant, resultats_codachats$groupe_TI_TdC1, resultats_codachats$Poids_consomme_CSGA  )
-names(Nourriture_consommee_CSGA)[1:3] = c("Identifiant", "groupe_TI_TdC","Poids_consomme_CSGA")
-categories <- unique(Nourriture_consommee_CSGA$groupe_TI_TdC)
-# Boucle pour créer les colonnes correspondantes dans Nourriture_consommee
-for (categorie in categories) {
-  Nourriture_consommee_CSGA[[paste0(categorie, "_CSGA")]] <- ifelse(Nourriture_consommee_CSGA$groupe_TI_TdC == categorie, Nourriture_consommee_CSGA$Poids_consomme_CSGA, 0)}
-# Supprimer les colonnes "groupe_TI_TdC" et "Poids_vf_consomme" si besoin
-Nourriture_consommee_CSGA <- subset(Nourriture_consommee_CSGA, select = -c(groupe_TI_TdC, Poids_consomme_CSGA))
-
-# Agrégation pour le dataframe Carnet_POIDS
-Carnet_POIDS_CSGA <- aggregate(UC_TI ~ Identifiant, resultats_codachats, mean)
-# Liste des noms de colonnes à agréger
-Nourriture_consommee_CSGA$NA_CSGA <- NULL
-Nourriture_consommee_CSGA$AUTRE_CSGA <- NULL
-colonnes <- names(Nourriture_consommee_CSGA)[-1] # Exclure la colonne "Identifiant"
-# Boucle pour agréger les données par colonne
-for (colonne in colonnes) {
-  Temp <- aggregate(formula(paste0(colonne, " ~ Identifiant")), data = Nourriture_consommee_CSGA, FUN = sum)
-  Carnet_POIDS_CSGA <- left_join(Carnet_POIDS_CSGA, Temp, by = "Identifiant")
-}
-
-# Diviser les colonnes par la colonne UC multipliée par le nombre de jour de saisie
-Carnet_POIDS_CSGA[, 3:ncol(Carnet_POIDS_CSGA)] <- Carnet_POIDS_CSGA[, 3:NCOL(Carnet_POIDS_CSGA)] / (Carnet_POIDS_CSGA$UC_TI*Nj)
-#Carnet_POIDS_CSGA[, 3:ncol(Carnet_POIDS_CSGA)] <- Carnet_POIDS_CSGA[, 3:NCOL(Carnet_POIDS_CSGA)] / (Carnet_POIDS_CSGA$Combien.de.personnes.vivent.dans.votre.foyer*Nj)
-# Calculer la somme des colonnes pour chaque ligne
-Carnet_POIDS_CSGA$SOMME_CARNET_POIDS_CSGA <- rowSums(Carnet_POIDS_CSGA[, 3:ncol(Carnet_POIDS_CSGA)], na.rm = TRUE)
-# Calculer la somme des colonnes hors boisson
-Carnet_POIDS_CSGA$SOMME_CARNET_HORS_BOISSON <- with(Carnet_POIDS_CSGA, SOMME_CARNET_POIDS_CSGA - 
-                                                 ALCOOL_CSGA - 
-                                                 FRUITS_JUS_CSGA- 
-                                                 LAIT_CSGA - 
-                                                 EAU_CSGA - 
-                                                 SODAS_LIGHT_CSGA - 
-                                                 SODAS_SUCRES_CSGA)
-
+#Ajout suffixe _Poids
+Carnet_POIDS <- Carnet_POIDS %>%
+  rename_with(
+    ~ ifelse(
+      grepl("_CARNET$", .x),
+      paste0(.x, "_Poids"),
+      .x
+    ),
+    .cols = -any_of(c("Identifiant", "UC_TI"))
+  )
 
   ## Kcal (Kcal/personne/jour)------------------------------------------
 #Pour chaque aliment, nous imputons sa valeur nutritionnelle en kcal / kg en fonction du poids consommé de chaque aliment.
-resultats_codachats$kcal_aliment_vf <- resultats_codachats$nrj_kcal*10*resultats_codachats$Poids_consomme_vf
+#resultats_codachats$kcal_aliment_vf <- resultats_codachats$nrj_kcal*10*resultats_codachats$Poids_consomme_vf
 #Pour chaque aliment consommé, nous imputons sa valeur nutritionnelle en kj / kg sur la base du poids consommé.
 Kcal_consommee <- data.frame(resultats_codachats$Identifiant, resultats_codachats$groupe_TI_TdC1, resultats_codachats$kcal_aliment_vf  )
 names(Kcal_consommee)[1:3] = c("Identifiant", "groupe_TI_TdC","kcal_aliment_vf")
@@ -1009,34 +825,38 @@ for (colonne in colonnes) {
   Temp <- aggregate(formula(paste0(colonne, " ~ Identifiant")), data = Kcal_consommee, FUN = sum)
   Carnet_KCAL <- left_join(Carnet_KCAL, Temp, by = "Identifiant")}
 # Diviser les colonnes par la colonne UC multipliée par Nj
-#Carnet_KCAL[, 3:ncol(Carnet_KCAL)] <- Carnet_KCAL[, 3:NCOL(Carnet_KCAL)] / (Carnet_KCAL$Combien.de.personnes.vivent.dans.votre.foyer * Nj)
 Carnet_KCAL$AUTRE_CARNET <- NULL
 Carnet_KCAL[, 3:ncol(Carnet_KCAL)] <- Carnet_KCAL[, 3:NCOL(Carnet_KCAL)] / (Carnet_KCAL$UC_TI* Nj)
 # Calculer la somme des colonnes  pour chaque ligne
-Carnet_KCAL$SOMME_CARNET_KCAL <- rowSums(Carnet_KCAL[, 3:ncol(Carnet_KCAL)], na.rm = TRUE)
+Carnet_KCAL$KCAL_TOTAL_CARNET <- rowSums(Carnet_KCAL[, 3:ncol(Carnet_KCAL)], na.rm = TRUE)
 # Calculer la somme des colonnes hors boisson
-Carnet_KCAL$SOMME_CARNET_HORS_BOISSON <- with(Carnet_KCAL, SOMME_CARNET_KCAL - 
+Carnet_KCAL$KCAL_HORS_BOISSON_CARNET <- with(Carnet_KCAL, KCAL_TOTAL_CARNET - 
                                                  ALCOOL_CARNET - 
                                                  FRUITS_JUS_CARNET - 
                                                  LAIT_CARNET - 
                                                  EAU_CARNET - 
                                                  SODAS_LIGHT_CARNET - 
-                                                 SODAS_SUCRES_CARNET)
-
-Carnet_KCAL$KCAL_SANS_ALCOOL <-  with(Carnet_KCAL, SOMME_CARNET_KCAL - ALCOOL_CARNET )
-Carnet_KCAL$KCAL_SANS_BOISSON <-  with(Carnet_KCAL, SOMME_CARNET_KCAL - ALCOOL_CARNET -  SODAS_LIGHT_CARNET - SODAS_SUCRES_CARNET - EAU_CARNET - FRUITS_JUS_CARNET - LAIT_CARNET )
+                                                 SODAS_SUCRES_CARNET - 
+                                                CAFE_THE_CARNET)
 
 
+#Ajout suffixe _KCAL
+Carnet_KCAL <- Carnet_KCAL %>%
+  rename_with(
+    ~ ifelse(
+      grepl("_CARNET$", .x),
+      paste0(.x, "_Kcal"),
+      .x
+    ),
+    .cols = -any_of(c("Identifiant", "UC_TI"))
+  )
 
 
 
+Carnet_KCAL$UC_TI <- NULL
 #Constitution des tableaux finaux ------------------------------------------------
 Carnet_id <- Carnet_POIDS  
 Carnet_id$Mesure <- "Carnet"
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem1, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem2, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem3, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem4, by='Identifiant')
 Carnet_id <- left_join(Carnet_id, Carnet_KCAL, by='Identifiant')
 
 
@@ -1077,89 +897,8 @@ addWorksheet(wb, "Données_brutes_nettoyées")
 writeData(wb, sheet = "Données_brutes_nettoyées", fichier_nettoyé )
 
 
-addWorksheet(wb, "tab_cumul_cat_norm")
-writeData(wb, sheet = "tab_cumul_cat_norm", tab_cumul_cat_norm)
 
 
 
 
-saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_CSGA.xlsx")))
-
-
-
-#COMPARAISON TRAITEMENT CSGA/ CESAER--------------------------------------
-#Garder les id de CSGA qui se retrouvent bien 
-resultats_codachats <- resultats_codachats %>%
-  semi_join(CSGA_FFQ_id, by = "Identifiant") %>%  # garde seulement les IDs présents dans CSGA
-  arrange(Identifiant)
-resultats_codachats <- resultats_codachats %>% 
-  filter(Lieu2 != "RHD")
-
-
-
-COMPARAISON <- left_join(Carnet_POIDS, Carnet_POIDS_CSGA, by = "Identifiant")
-COMPARAISON$UC_TI.x <- NULL
-COMPARAISON$UC_TI.y<- NULL
-# Base-R renaming
-names(COMPARAISON)[names(COMPARAISON) == "SOMME_CARNET_HORS_BOISSON.x"] <- "SOMME_HORS_BOISSON_CARNET"
-names(COMPARAISON)[names(COMPARAISON) == "SOMME_CARNET_HORS_BOISSON.y"] <- "SOMME_HORS_BOISSON_CSGA"
-names(COMPARAISON)[names(COMPARAISON) == "SOMME_CARNET_POIDS"] <- "SOMME_POIDS_CARNET"
-names(COMPARAISON)[names(COMPARAISON) == "SOMME_CARNET_POIDS_CSGA"] <- "SOMME_POIDS_CSGA"
-print(unique(COMPARAISON$FEC_NON_RAF_CSGA))
-
-
-# 1) identifier les colonnes numériques
-num_cols <- sapply(COMPARAISON, is.numeric)
-
-# 2) ne garder que les lignes où TOUTES ces colonnes sont finies (ni NA, ni Inf)
-COMPARAISON <- COMPARAISON[
-  apply(COMPARAISON[, num_cols], 1,
-        function(x) all(is.finite(x))),
-]
-
-
-COMPARAISON <- COMPARAISON %>%
-  { 
-    # 1) on calcule la liste des préfixes triés
-    bases <- names(.)[-1] %>%
-      sub("_(CARNET|CSGA)$", "", .) %>%
-      unique() %>%
-      sort()
-    # 2) on crée le vecteur intercalé prefix_FFQ, prefix_CSGA
-    ordered_cols <- map(bases, ~ c(paste0(.x, "_CARNET"), paste0(.x, "_CSGA"))) %>%
-      flatten_chr()
-    # 3) on sélectionne : 1ʳᵉ colonne + ces paires
-    select(., 1, all_of(ordered_cols))
-  }
-
-# 1) repère les préfixes (hors la 1ʳᵉ colonne)
-bases <- names(COMPARAISON)[-1] %>%
-  sub("_(CARNET|CSGA)$", "", .) %>%
-  unique() %>%
-  sort()
-
-#COMPARAISON <- COMPARAISON %>% 
-#  filter(FEC_NON_RAF_CSGA < 10)
-
-
-# 2) calcule la corrélation pour chaque préfixe
-cor_table <- map_dbl(bases, function(b) {
-  col1 <- paste0(b, "_CARNET")
-  col2 <- paste0(b, "_CSGA")
-  cor(
-    COMPARAISON[[col1]],
-    COMPARAISON[[col2]],
-    use = "pairwise.complete.obs"
-  )
-})
-
-# 3) assemble dans un tibble
-cor_results <- tibble(
-  prefix = bases,
-  correlation = cor_table
-)
-
-# affiche le résultat
-cor_results
-summary(COMPARAISON$VIANDE_ROUGE_CARNET)
-summary(COMPARAISON$VIANDE_ROUGE_CSGA)
+saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_CSGA.xlsx")))

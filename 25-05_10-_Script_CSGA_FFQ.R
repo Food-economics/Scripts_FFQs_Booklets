@@ -7,18 +7,14 @@ library("dplyr");library("tidyr");library("ggplot2");library("gridExtra");librar
 library(questionr)
 
   ## Importation des données ---------------------
-researcher<-"adenieul" #"vbellassen" edumont
-if (researcher == "adenieul") {
-  setwd <- paste0("C:/Users/adenieul/ownCloud - Anaelle Denieul@cesaer-datas.inra.fr/TI Dijon/donnees")
-} else {
-  setwd(paste0("C:/Users/",researcher,"/Owncloud/TI Dijon/donnees"))
-}
+setwd <- paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/")
+
 
 
     ### Importation des données  ------------------
 #donnees brutes
 CSGA_base <- read_excel(
-  path  = "Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
+  path  = "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
   sheet = "ffq_donnees-brutes"
 )
 
@@ -28,7 +24,7 @@ CSGA_base <- CSGA_base %>% mutate_all(~gsub("\\)", "",.))
 
 #CSGA TRANSFO
 CSGA_FREQ <- read_excel(
-  path  = "Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
+  path  = "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers bruts/Données_CSGA.xlsx",
   sheet = "ffq_donnees-transform-suvimax"
 )
 
@@ -54,9 +50,9 @@ CSGA_FREQ <- NULL
 
 ### Importation des données des tableaux annexes ----------------
 
-CALNUT<- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_FFQ.xlsx")
-Encodage <- read_xlsx(paste("Données analysées - Article N°1 chèques/Tableaux_annexes/Freq_FFQ.xlsx"))
-Taille_Portion <- read_xlsx(paste("Données analysées - Article N°1 chèques/Tableaux_annexes/Taille portion.xlsx"))
+CALNUT<- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_FFQ.xlsx")
+Encodage <- read_xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Freq_FFQ.xlsx"))
+Taille_Portion <- read_xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Taille portion.xlsx"))
 
 
 #HARMONISER LES NOMS DE PORTIONS
@@ -243,7 +239,7 @@ Frame <- Frame %>%
                     `3` = "Type C",
                     `4` = "Type D",
                     `5` = "Type E",
-                    `6` = "Type F",
+                    `6` = "Type F", #Note pour le lait, le FFQ CSGA comporte une option de réponse sans photo associée
                     .default = NA_character_)
   ))
 
@@ -479,16 +475,16 @@ CSGA_POIDS$ALCOOL_FFQ <- (CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.
   CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.alcools.forts + CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.aperitifs)/1000
 
 #  ##CAFE_THE_FFQ--------------
-#FFQ_POIDS$CAFE_THE_FFQ <- rep(0,nrow(Frame))
-#ncol1 <- grep("de.cafe.y.compris.decafeine", colnames(Frame))
-#ncol2 <- grep("de.the",colnames(Frame))
-#term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1)*replace_na_with_zero(Poids_modifie$CAFE.portion))  
-#term2 <- replace_na_with_zero(FREQ_intake(Frame, ncol2)*replace_na_with_zero(Poids_modifie$THE.portion))
-#FFQ_POIDS_Int$de.cafe.y.compris.decafeine <-term1 
-#FFQ_POIDS_Int$de.the <- term2 
-#FFQ_POIDS$CAFE_THE_FFQ <- term1 + term2
+FFQ_POIDS$CAFE_THE_FFQ <- rep(0,nrow(Frame))
+ncol1 <- grep("de.cafe.y.compris.decafeine", colnames(Frame))
+ncol2 <- grep("de.the",colnames(Frame))
+term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1)*replace_na_with_zero(Poids_modifie$CAFE.portion))  
+term2 <- replace_na_with_zero(FREQ_intake(Frame, ncol2)*replace_na_with_zero(Poids_modifie$THE.portion))
+FFQ_POIDS_Int$de.cafe.y.compris.decafeine <-term1 
+FFQ_POIDS_Int$de.the <- term2 
+FFQ_POIDS$CAFE_THE_FFQ <- term1 + term2
 
-#CSGA_POIDS$CAFE_THE_FFQ <- (CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.the + CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.cafe)/1000
+CSGA_POIDS$CAFE_THE_FFQ <- (CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.the + CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.cafe)/1000
 
 
   ##CEREALES_PD_FFQ---------------
@@ -1024,53 +1020,40 @@ CSGA_POIDS$VIANDE_ROUGE_FFQ <- (CSGA_POIDS$Quantite.g.journaliere.de.consommatio
 
 #jE VIRE epices / CAFE_THE/ MGV
 CSGA_POIDS$EPICES_CONDIMENTS_FFQ <- NULL
-CSGA_POIDS$CAFE_THE_FFQ <- NULL
+#CSGA_POIDS$CAFE_THE_FFQ <- NULL
 CSGA_POIDS$MGV_FFQ <- NULL
-CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.cafe<- NULL
-CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.the<- NULL
+#CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.cafe<- NULL
+#CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.the<- NULL
 CSGA_POIDS$Quantite.g.journaliere.de.consommation.de.margarine <- NULL
-FFQ_POIDS$CAFE_THE_FFQ <- NULL
+#FFQ_POIDS$CAFE_THE_FFQ <- NULL
 
 
 #Somme - TRAITEMENT TI
-FFQ_POIDS$SOMME_FFQ_POIDS<- rowSums(FFQ_POIDS[2:31])
-FFQ_POIDS$SOMME_FFQ_HORS_BOISSON <- replace_na_with_zero(FFQ_POIDS$SOMME_FFQ_POIDS- 
+FFQ_POIDS$POIDS_TOTAL_FFQ <- rowSums(FFQ_POIDS[2:32])
+
+
+FFQ_POIDS$POIDS_HORS_BOISSON_FFQ <- replace_na_with_zero(FFQ_POIDS$POIDS_TOTAL_FFQ - 
                                                            FFQ_POIDS$ALCOOL_FFQ - 
                                                            FFQ_POIDS$FRUITS_JUS_FFQ - 
                                                            FFQ_POIDS$LAIT_FFQ -
                                                            FFQ_POIDS$EAU_FFQ -
                                                            FFQ_POIDS$SODAS_LIGHT_FFQ -
-                                                           FFQ_POIDS$SODAS_SUCRES_FFQ)
-
-#Somme - TRAITEMENT CSGA
-#CSGA_POIDS$SOMME_FFQ_POIDS<- rowSums(CSGA_POIDS[124:151])
-#
-#CSGA_POIDS$SOMME_FFQ_HORS_BOISSON <- replace_na_with_zero(CSGA_POIDS$SOMME_FFQ_POIDS- 
-#                                                            CSGA_POIDS$ALCOOL_FFQ - 
-#                                                            CSGA_POIDS$FRUITS_JUS_FFQ - 
-#                                                            CSGA_POIDS$LAIT_FFQ -
-#                                                            CSGA_POIDS$EAU_FFQ -
-#                                                            CSGA_POIDS$SODAS_LIGHT_FFQ -
-#                                                            CSGA_POIDS$SODAS_SUCRES_FFQ)
+                                                           FFQ_POIDS$SODAS_SUCRES_FFQ - 
+                                                           FFQ_POIDS$CAFE_THE_FFQ)
 
 
-#VF_CSGA_POIDS
-#CSGA_POIDS$Quantite.ml.journaliere.de.consommation.de.eau.du.robinet <- NULL
-#CSGA_POIDS_VF <- CSGA_POIDS[, -c(2:122)]
-#CSGA_POIDS_VF <- CSGA_POIDS_VF %>%
-#  rename(Identifiant = Code)
 
-#CALCUL DE  KCAL -----------------------------------
-#CSGA_POIDS_int <- CSGA_POIDS[, -c(123:ncol)]
-#CSGA_POIDS_int  <- CSGA_POIDS_int  %>%
-#  rename(Identifiant = Code)
+#Ajout suffixe _Poids
+FFQ_POIDS <- FFQ_POIDS %>%
+  rename_with(
+    ~ ifelse(
+      grepl("_FFQ$", .x),
+      paste0(.x, "_Poids"),
+      .x
+    ),
+    .cols = -any_of(c("Identifiant", "UC_TI"))
+  )
 
-#CSGA_POIDS_int <- CSGA_POIDS_int %>%
-#  mutate(across(where(is.numeric), ~ .x / 1000))
-
-
-#df_long <- CSGA_POIDS_int %>%
-#  pivot_longer(cols = -Identifiant, names_to = "FFQ_CSGA", values_to = "Poids") 
 
 df_long <- FFQ_POIDS_Int %>%
   pivot_longer(cols = -Identifiant, names_to = "FFQ_TI", values_to = "Poids") 
@@ -1093,204 +1076,38 @@ FFQ_KCAL<- pivot_wider(
 
 
 # Calculer la somme des colonnes  pour chaque ligne
-FFQ_KCAL$SOMME_FFQ_KCAL <- rowSums(FFQ_KCAL[, 2:ncol(FFQ_KCAL)], na.rm = TRUE)
+FFQ_KCAL$KCAL_TOTAL <- rowSums(FFQ_KCAL[, 2:ncol(FFQ_KCAL)], na.rm = TRUE)
 
 
 # Calculer la somme des colonnes hors boisson
-FFQ_KCAL$SOMME_CARNET_HORS_BOISSON <- with(FFQ_KCAL, SOMME_FFQ_KCAL - 
+FFQ_KCAL$KCAL_HORS_BOISSON <- with(FFQ_KCAL, KCAL_TOTAL  - 
                                                 ALCOOL - 
                                                 FRUITS_JUS - 
-                                                
+                                                CAFE_THE - 
                                                 LAIT - 
                                                 EAU - 
                                                 SODAS_LIGHT - 
                                                 SODAS_SUCRES)
 
-FFQ_KCAL$KCAL_SANS_ALCOOL <-  with(FFQ_KCAL, SOMME_FFQ_KCAL - ALCOOL)
-FFQ_KCAL$KCAL_SANS_BOISSON <-  with(FFQ_KCAL, SOMME_FFQ_KCAL - ALCOOL- LAIT - SODAS_LIGHT - SODAS_SUCRES - EAU- FRUITS_JUS )
+
+# Ajouter le suffixe _FFQ_KCAL à chaque catégorie
+FFQ_KCAL <- FFQ_KCAL %>%
+  rename_with(
+    ~ paste0(.x, "_FFQ_Kcal"),
+    .cols = -Identifiant
+  )
 
 
 
-#CALCUL DE MAR /MER--------------------------------------
 
-## Calcul de MAR et MER
+FFQ_KCAL$UC_TI <- NULL
 
-###Calcul de la vitamine A --------------------------
-###Calcul de la vitamine A --------------------------
-df_long$vit_a_mcg <- (df_long$retinol_mcg + (df_long$beta_carotene_mcg/6)) 
-#Ajout des dernières colonnes modifiées
-df_long$proteines_g_alim <- df_long$Poids* df_long$proteines_g *10 
-df_long$proteines_kcal_alim <- ((df_long$proteines_g*4) * df_long$Poids *10 )
-df_long$ag_18_2_lino_g_alim  <- (df_long$Poids * df_long$ag_18_2_lino_g*10 )
-df_long$ag_18_2_lino_kcal_alim   <- (df_long$Poids *df_long$ag_18_2_lino_g*9*10 )
-df_long$ag_18_3_a_lino_g_alim<- (df_long$Poids *  df_long$ag_18_3_a_lino_g*10 )
-df_long$ag_18_3_a_lino_kcal_alim <- (df_long$Poids*df_long$ag_18_3_a_lino_g*9*10 )
-df_long$ags_g_alim  <- (df_long$ags_g* df_long$Poids * 10)
-df_long$ags_kcal_alim <- (df_long$ags_g *9* df_long$Poids  * 10)
-
-
-### Calcul des quantités de nutriments par aliment -----------------
-# Sélection des colonnes à transformer
-colonnes_a_transformer <- c("fibres_g","ag_20_6_dha_g", "magnesium_mg", "potassium_mg", "calcium_mg", "fer_mg", "cuivre_mg", "zinc_mg",
-                            "selenium_mcg", "iode_mcg","vit_a_mcg","vitamine_d_mcg", "vitamine_e_mg", "vitamine_c_mg",
-                            "vitamine_b1_mg", "vitamine_b2_mg", "vitamine_b3_mg","vitamine_b6_mg", "vitamine_b9_mcg", "vitamine_b12_mcg",
-                            "alcool_g", "sodium_mg", "fructose_g", "glucose_g", "maltose_g", "saccharose_g")
-
-# Vérifier si toutes les colonnes sont présentes
-colonnes_manquantes <- setdiff(colonnes_a_transformer, names(df_long))
-if (length(colonnes_manquantes) > 0) {
-  stop("Les colonnes suivantes ne sont pas reconnues : ", paste(colonnes_manquantes, collapse = ", "))
-}
-
-# Si tout est correct, appliquer la transformation
-df_long <- df_long %>%
-  mutate(across(all_of(colonnes_a_transformer),
-                ~ . * Poids * 10,
-                .names = "{.col}_alim"))
-
-### Somme par ID des nutriments d'interet --------------------------
-colonnes_a_sommer <- names(df_long)[grep("_alim$", names(df_long))]
-print(colonnes_a_sommer)  # Debugging check
-
-somme_par_identifiant <- df_long %>%
-  group_by(Identifiant) %>%
-  summarise(across(colonnes_a_sommer, ~ sum(.x, na.rm = TRUE)))
-
-print(df_long$ags_kcal_alim)
-
-#Somme des sucres 
-somme_par_identifiant$sucre_aj_g_appro_alim <- somme_par_identifiant$fructose_g_alim+ somme_par_identifiant$glucose_g_alim + somme_par_identifiant$maltose_g_alim + somme_par_identifiant$saccharose_g_alim
-
-#Calcul des nutriments sans alcool
-cols_to_extract <- c("Identifiant", "KCAL_SANS_ALCOOL" , "SOMME_FFQ_KCAL") 
-extracted_df <- FFQ_KCAL[, cols_to_extract]
-somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
-cols_to_extract <- c("Identifiant", "Sexe") 
-extracted_df <- Frame[, cols_to_extract]
-somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
-
-#Calcul dernières colonnes 
-somme_par_identifiant$proteines_kcal_2000 <- (somme_par_identifiant$proteines_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$fibres_g_2000 <- (somme_par_identifiant$fibres_g_alim*2000)/  somme_par_identifiant$SOMME_FFQ_KCAL
-somme_par_identifiant$ag_18_3_a_lino_g_2000 <- (somme_par_identifiant$ag_18_3_a_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$ag_18_2_lino_g_2000 <- (somme_par_identifiant$ag_18_2_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$ag_20_6_dha_g_2000 <- (somme_par_identifiant$ag_20_6_dha_g_alim*2000)/(somme_par_identifiant$SOMME_FFQ_KCAL)
-
-somme_par_identifiant$ags_kcal_2000 <- (somme_par_identifiant$ags_kcal_alim *100) /(somme_par_identifiant$KCAL_SANS_ALCOOL)
-
-### Rajustement / 2000 KCAL---------------------------------------
-exclude_cols <-  c("proteines_kcal_alim", "ags_kcal_alim", "ag_18_2_lino_g_alim", "ag_18_3_a_lino_g_alim","ag_18_3_a_lino_kcal_alim",
-                   "ags_g_alim","proteines_g_alim" ,"fructose_g_alim"  ,"maltose_g_alim"       ,   "glucose_g_alim"    , "saccharose_g_alim", "alcool_g_alim",
-                   "ag_18_2_lino_kcal_alim", "fibres_g_alim", "ag_20_6_dha_g_alim")
-alim_cols <- grep("_alim$", names(somme_par_identifiant), value = TRUE)
-alim_cols <- setdiff(alim_cols, exclude_cols)
-for (col in alim_cols) {
-  somme_par_identifiant[[col]] <- (somme_par_identifiant[[col]] * 2000) / somme_par_identifiant$SOMME_FFQ_KCAL
-  new_col_name <- sub("_alim$", "_2000", col)
-  names(somme_par_identifiant)[names(somme_par_identifiant) == col] <- new_col_name
-}
-
-### Calcul des ratios du MAR------------------------
-# Les recommandations communes, peu importe le genre
-somme_par_identifiant$ratio_prot <- ifelse(somme_par_identifiant$proteines_kcal_2000 / 10 > 1, 1, somme_par_identifiant$proteines_kcal_2000/ 10)
-somme_par_identifiant$ratio_fibre <- ifelse(somme_par_identifiant$fibres_g_2000 / 30 > 1, 1, somme_par_identifiant$fibres_g_2000 / 30)
-somme_par_identifiant$ratio_lino <- ifelse(somme_par_identifiant$ag_18_2_lino_g_2000/ 4 > 1, 1, somme_par_identifiant$ag_18_2_lino_g_2000 / 4)
-somme_par_identifiant$ratio_alphalino <- ifelse(somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1 > 1, 1, somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1)
-somme_par_identifiant$ratio_dha <- ifelse(somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25 > 1, 1, somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25)
-somme_par_identifiant$ratio_potassium <- ifelse(somme_par_identifiant$potassium_mg_2000 / 3500 > 1, 1, somme_par_identifiant$potassium_mg_2000 / 3500)
-somme_par_identifiant$ratio_calcium <- ifelse(somme_par_identifiant$calcium_mg_2000 / 950 > 1, 1, somme_par_identifiant$calcium_mg_2000 / 950)
-somme_par_identifiant$ratio_selenium <- ifelse(somme_par_identifiant$selenium_mcg_2000 / 70 > 1, 1, somme_par_identifiant$selenium_mcg_2000 / 70)
-somme_par_identifiant$ratio_iode <- ifelse(somme_par_identifiant$iode_mcg_2000 / 150 > 1, 1, somme_par_identifiant$iode_mcg_2000 / 150)
-somme_par_identifiant$ratio_vit_d <- ifelse(somme_par_identifiant$vitamine_d_mcg_2000 / 15 > 1, 1, somme_par_identifiant$vitamine_d_mcg_2000 / 15)
-somme_par_identifiant$ratio_vit_c <- ifelse(somme_par_identifiant$vitamine_c_mg_2000 / 110 > 1, 1, somme_par_identifiant$vitamine_c_mg_2000 / 110)
-somme_par_identifiant$ratio_vit_b2 <- ifelse(somme_par_identifiant$vitamine_b2_mg_2000 / 1.6 > 1, 1, somme_par_identifiant$vitamine_b2_mg_2000 / 1.6)
-somme_par_identifiant$ratio_vit_b12 <- ifelse(somme_par_identifiant$vitamine_b12_mcg_2000 / 4 > 1, 1, somme_par_identifiant$vitamine_b12_mcg_2000 / 4)
-somme_par_identifiant$ratio_vit_b9 <- ifelse(somme_par_identifiant$vitamine_b9_mcg_2000 / 330 > 1, 1, somme_par_identifiant$vitamine_b9_mcg_2000 / 330)
-
-somme_par_identifiant$Sexe
-# Définir une fonction pour calculer le ratio
-calculate_ratio <- function(sexe, valeur, seuil_femme, seuil_homme) {
-  if (sexe == 1) {
-    return(ifelse(valeur / seuil_femme > 1, 1, valeur / seuil_femme))
-  } else if (sexe == 2) {
-    return(ifelse(valeur / seuil_homme > 1, 1, valeur / seuil_homme))
-  } else {
-    return(NA)
-  }
-}
-
-## Appliquer la fonction pour chaque nutriment
-somme_par_identifiant$ratio_magnesium <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$magnesium_mg_2000, 300, 380)
-somme_par_identifiant$ratio_fer <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$fer_mg_2000, 13.5, 11)
-somme_par_identifiant$ratio_cuivre <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$cuivre_mg_2000, 1.5, 1.9) 
-somme_par_identifiant$ratio_zinc <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$zinc_mg_2000, 9.3, 11.7)
-somme_par_identifiant$ratio_vit_a <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vit_a_mcg_2000, 650, 750)
-somme_par_identifiant$ratio_vit_e <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_e_mg_2000, 9, 10)
-somme_par_identifiant$ratio_vit_b1 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b1_mg_2000,0.965, 1.2)
-somme_par_identifiant$ratio_vit_b3 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b3_mg_2000, 14.9, 18.5) 
-somme_par_identifiant$ratio_vit_b6 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b6_mg_2000, 1.6, 1.7)
-
-somme_par_identifiant <- na.omit(somme_par_identifiant)
-
-### Calcul du MAR -----------------------------------
-
-somme_par_identifiant$MAR <- ((somme_par_identifiant$ratio_prot + somme_par_identifiant$ratio_fibre + somme_par_identifiant$ratio_lino + somme_par_identifiant$ratio_alphalino + somme_par_identifiant$ratio_dha + 
-                                 somme_par_identifiant$ratio_magnesium + somme_par_identifiant$ratio_potassium + somme_par_identifiant$ratio_calcium + somme_par_identifiant$ratio_fer + somme_par_identifiant$ratio_cuivre +
-                                 somme_par_identifiant$ratio_zinc + somme_par_identifiant$ratio_selenium + somme_par_identifiant$ratio_iode + somme_par_identifiant$ratio_vit_a + somme_par_identifiant$ratio_vit_d + 
-                                 somme_par_identifiant$ratio_vit_e + somme_par_identifiant$ratio_vit_c + somme_par_identifiant$ratio_vit_b1 + somme_par_identifiant$ratio_vit_b2 + somme_par_identifiant$ratio_vit_b3 + 
-                                 somme_par_identifiant$ratio_vit_b6 + somme_par_identifiant$ratio_vit_b9 + somme_par_identifiant$ratio_vit_b12)/23)*100;
-mean(somme_par_identifiant$MAR, na.rm=TRUE)
-
-### Ratio pour le MER ----------------------------------------
-# Définir une fonction pour calculer le ratio
-somme_par_identifiant$ratio_ags <- ifelse((somme_par_identifiant$ags_kcal_2000 / 12 < 1),( 1), (somme_par_identifiant$ags_kcal_2000/ 12 ))
-somme_par_identifiant$ratio_sodium  <- ifelse(somme_par_identifiant$sodium_mg_2000/ 2300 < 1, 1, somme_par_identifiant$sodium_mg_2000/ 2300 )
-somme_par_identifiant$ratio_sucre_aj<- ifelse(somme_par_identifiant$sucre_aj_g_appro_2000/100 < 1, 1, somme_par_identifiant$sucre_aj_g_appro_2000/100)
-
-### Calcul du MER -----------------------------------
-somme_par_identifiant$MER <- (((somme_par_identifiant$ratio_ags + somme_par_identifiant$ratio_sodium + somme_par_identifiant$ratio_sucre_aj)*100)/3)-100
-mean(somme_par_identifiant$MER)
-mean(somme_par_identifiant$MAR)
-
-
-
-#CALCUL des indicateurs environnementaux --------------------------------------
-df_long <- FFQ_POIDS_Int %>%
-  pivot_longer(cols = -Identifiant, names_to = "FFQ_TI", values_to = "Poids") 
-
-df_long <- df_long %>%
-  filter(!is.na(Poids))
-
-df_long <- inner_join(df_long, CALNUT, by= "FFQ_TI", relationship = "many-to-many")
-
-  ## Sélection des colonnes à transformer----------------
-colonnes_a_transformer <- c("climat", "couche_ozone","ions","ozone",	"partic",	"acid",	"eutro_terr", "eutro_eau","eutro_mer",	"sol",	"toxi_eau",	"ress_eau",	"ress_ener",	"ress_min")
-
-#  On multiplie par le poids de l'aliment et par 1000 pour convertir au kg pour chaque indicateur env 
-df_long <- df_long %>%
-  mutate(across(all_of(colonnes_a_transformer),~ . * Poids , .names = "{.col}_env" ))
-
-df_long$climat_env <- df_long$climat_env*1000
-  ## Somme par ID des résultats de chaque aliment  --------------------------
-
-colonnes_a_sommer_env <- grep("_env$", names(df_long), value = TRUE)
-df_selected <- df_long[, colonnes_a_sommer_env, drop = FALSE]
-
-somme_par_identifiant_env <- df_long %>%
-  group_by(Identifiant) %>%
-  summarise(across(all_of(colonnes_a_sommer_env), ~ sum(.x, na.rm = TRUE)))
 
 #Constitution du tableau final ------------------------------------------------
 FFQ_id <- FFQ_POIDS
 FFQ_id<- inner_join(FFQ_id, FFQ_KCAL, by="Identifiant")
 FFQ_id$Mesure <- "FFQ"
-new_df <- somme_par_identifiant[, c("Identifiant", "MAR", "MER")]
-FFQ_id <- inner_join(FFQ_id, new_df, by='Identifiant')
-FFQ_id <- inner_join(FFQ_id, somme_par_identifiant_env, by='Identifiant')
-FFQ_id <- subset(FFQ_id, SOMME_FFQ_KCAL > 0)
-FFQ_id <- subset(FFQ_id,
-                 SOMME_FFQ_KCAL >= 500 & 
-                   SOMME_FFQ_KCAL <= 4500)
+
 
 
 # TELECHARGEMENT ----------------------------
@@ -1311,8 +1128,7 @@ writeData(wb, sheet = "Poids_corrigée_TI", FFQ_POIDS)
 addWorksheet(wb, "Poids_corrigée_CSGA")
 writeData(wb, sheet = "Poids_corrigée_CSGA", FFQ_POIDS)
 
-saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx")))
-
+saveWorkbook(wb,("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_CSGA.xlsx"))
 
 
 

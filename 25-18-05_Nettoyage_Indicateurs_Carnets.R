@@ -16,46 +16,46 @@ campaign<-"24-03" #"22-11" #23-02 #"23-11" #"24-03"
 Nj <- 28 #"Nombre de jour de saisie : 28 si 23-11/24-03 #29 sinon 
 
 ### Importation des données de Nov_2022 ------------------
-Carnet_nov_22 <- read.xlsx("Données analysées - Article N°1 chèques/Fichiers_bruts/22-11_Carnets.xlsx")
-Metadata_nov_22 <- read_excel("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_22.xlsx", sheet = "Metadata")
+Carnet_nov_22 <- read.xlsx("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/22-11_Carnets.xlsx")
+Metadata_nov_22 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_22.xlsx", sheet = "Metadata")
 
 ### Importation des données de Mars_2023 ------------------
-Carnet_mars_23 <- read_excel("Données analysées - Article N°1 chèques/Fichiers_bruts/23-02_Carnets.xlsx")
-Metadata_mars_23 <- read_excel("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_23.xlsx", sheet = "Metadata")
+Carnet_mars_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/23-02_Carnets.xlsx")
+Metadata_mars_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_23.xlsx", sheet = "Metadata")
 Metadata_mars_23 <- Metadata_mars_23 %>%
   mutate(Identifiant = gsub("-CCAS \\(inclus Pôle emploi et SPF\\)", "-CCAS", Identifiant))
 
 ### Importation des données de Nov_2023 -------------------
-Carnet_nov_23 <- read_excel("Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_Carnets.xlsx")
-Metadata_nov_23 <- read_excel("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_23.xlsx", sheet = "Metadata")
+Carnet_nov_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_Carnets.xlsx")
+Metadata_nov_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_23.xlsx", sheet = "Metadata")
 
 ### Importation des données de Mars_2024 --------------------
-Saisie_a <- read_excel("Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_Carnets_a.xlsx")
-Saisie_b <- read_excel("Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_Carnets_b.xlsx")
+Saisie_a <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_Carnets_a.xlsx")
+Saisie_b <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_Carnets_b.xlsx")
 Carnet_mars_24 <- full_join(Saisie_a,Saisie_b,by=c("Code","TicketCode","Lieu","Date","CodeCIQUAL","LibelleCIQUAL","Categorie1","Categorie2",
                                                    "Nb","Unite","Prix","Appreciation","Labels","Menu","PrixMenu","LibelleCustom","MontantChequeAlimentaire",
                                                    "DateSaisie","DateMAJ","Photo"))
-Metadata_mars_24 <- read_excel("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_24.xlsx", sheet = "Metadata")
+Metadata_mars_24 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_24.xlsx", sheet = "Metadata")
 
 ### Importation des données des tableaux annexes ----------------
-CALNUT<- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_CARNET.xlsx")
-magasins <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_magasins.xlsx")
-RHD_COL <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/RHD_COL.xlsx")
-RHD_COM <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/RHD_COM.xlsx") 
-Correction_lieu_nov_22 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/22_11_correction_lieu.xlsx")
-Correction_date_nov_22 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/22-11_Correction_date.xlsx")
-Correction_lieu_mars_23 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/23_02_correction_lieu.xlsx")
-Correction_date_mars_23 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/23-02_Correction_date.xlsx")
-Correction_lieu_nov_23 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/23_11_correction_lieu.xlsx")
-Correction_date_nov_23 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/23-11_Correction-date.xlsx")
-Correction_date_mars_24 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/24-03_Correction-date.xlsx")
-Correction_lieu_mars_24 <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/24_03_correction_lieu.xlsx")
-Reclassement_Libelle_Custom <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_Libelle_Custom.xlsx")
-Reclassement_Groupe_TI <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_groupe_TI.xlsx")
-resultats_pondérés <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/moyennes_pondérées.xlsx")
-Poids_unitaires_manquants <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/poids_unitaire_manquants.xlsx")
-Recap_envoi_cheques <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Recap_envoi_cheque.xlsx")
-resultats_pondérés <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/resultats_pondérés.xlsx")
+CALNUT<- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_CARNET.xlsx")
+magasins <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_magasins.xlsx")
+RHD_COL <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/RHD_COL.xlsx")
+RHD_COM <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/RHD_COM.xlsx") 
+Correction_lieu_nov_22 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/22_11_correction_lieu.xlsx")
+Correction_date_nov_22 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/22-11_Correction_date.xlsx")
+Correction_lieu_mars_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/23_02_correction_lieu.xlsx")
+Correction_date_mars_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/23-02_Correction_date.xlsx")
+Correction_lieu_nov_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/23_11_correction_lieu.xlsx")
+Correction_date_nov_23 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/23-11_Correction-date.xlsx")
+Correction_date_mars_24 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/24-03_Correction-date.xlsx")
+Correction_lieu_mars_24 <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/24_03_correction_lieu.xlsx")
+Reclassement_Libelle_Custom <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_Libelle_Custom.xlsx")
+Reclassement_Groupe_TI <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Reclassement_groupe_TI.xlsx")
+resultats_pondérés <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/moyennes_pondérées.xlsx")
+Poids_unitaires_manquants <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/poids_unitaire_manquants.xlsx")
+Recap_envoi_cheques <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Recap_envoi_cheque.xlsx")
+resultats_pondérés <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/resultats_pondérés.xlsx")
 
 # NETTOYAGE DU FICHIER COD_ACHATS : LIEUX / DATES / LIBELLE_CUSTOM / LIBELLE_CIQUAL-----------------
 #Selection des jeux de données et assignation aux variables resultats_codachats et metadonnees en fonction de la valeur de la variable campagne.
@@ -592,11 +592,6 @@ temp <- resultats_codachats %>%
   bind_rows(resultats_codachats %>% filter(is.na(MontantChequeAlimentaire) | MontantChequeAlimentaire == ""))
 resultats_codachats  <- temp 
 
-#Suppression cafe the et condiments
-resultats_codachats <- subset(
-  resultats_codachats,
-  !groupe_TI_TdC1 %in% c("CAFE_THE", "EPICES_CONDIMENTS")
-)
 
 #22-11 MEAN : 18  MEDIAN 13  --> Epiceries MEAN 15 / MEDIAN  12
 #23-02 : MEAN : 21 / MEDIAN 16 --> Epiceries MEAN 19 / MEDIAN  15
@@ -1148,9 +1143,15 @@ describe(is.na(resultats_codachats$Prix_vf))
 #Mars 23 : Poids :1%, Prix vf: 1,6%
 #Nov 23 : Poids vf :0;9%, Prix vf: 13%
 #Mars 24 : Poids vf : 0,5 et  prix vf : 10%
-
+resultats_codachats_CAFE_THE <- resultats_codachats %>%
+  filter(groupe_TI_TdC1 == "CAFE_THE")
 
 lignes_vide <- resultats_codachats[is.na(resultats_codachats$Prix_Kg_post_imput), ]
+#Suppression condiments
+resultats_codachats <- subset(
+  resultats_codachats,
+  !groupe_TI_TdC1 %in% c("EPICES_CONDIMENTS")
+)
 
 
 ## Suppression des identifiants qui enregistrent une dépense inférieure à 25% du budget alimentaire déclaré---------
@@ -1221,6 +1222,22 @@ resultats_codachats <- resultats_codachats[, setdiff(names(resultats_codachats),
 resultats_codachats$Poids_consomme_vf <- ifelse((resultats_codachats$Lieu2 != "RHD"),(resultats_codachats$Poids_vf*resultats_codachats$yield_factor*resultats_codachats$pct_conso),(resultats_codachats$Poids_vf))
 resultats_codachats$kcal_aliment_vf <- resultats_codachats$nrj_kcal*10*resultats_codachats$Poids_consomme_vf
 
+
+#Conversion 
+#https://www.femobook.com/blogs/coffee-knowledge/a-guide-to-the-golden-cup-standard?
+#55 g de café pour 1 L d’eau
+#The ISO 3103 (2g de the pour 1L d'eau)
+#resultats_codachats$nrj_kcal <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$Poids_vf*resultats_codachats$Sec_Vol),(resultats_codachats$Poids_vf))
+
+
+resultats_codachats$Poids_consomme_vf <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$Poids_vf*resultats_codachats$Sec_Vol),(resultats_codachats$Poids_consomme_vf))
+resultats_codachats_CAFE_THE <- resultats_codachats %>%
+  filter(groupe_TI_TdC1 == "CAFE_THE")
+
+  
+
+
+
 resultats_codachats <- resultats_codachats %>%
   mutate(
     Prix_Kg_post_imput = case_when(
@@ -1229,161 +1246,10 @@ resultats_codachats <- resultats_codachats %>%
       TRUE                    ~ Prix_vf / Poids_consomme_vf
     )
   )
-###POIDS PAR SEMAINE -----------------------------------------------------------------------
-
-# Calcul de la semaine relative
-resultats_codachats$semaine_num <- floor(as.numeric(resultats_codachats$Date_vf - resultats_codachats$date_starting) / 7) + 1
-# Plafonner à 4
-resultats_codachats$semaine_num <- pmin(resultats_codachats$semaine_num, 4)
-tab <- table(resultats_codachats$semaine_num)
-
-pct <- prop.table(tab) * 100
-round(pct, 1)
-
-# On récupère la liste des semaines présentes
-semaines <- sort(unique(resultats_codachats$semaine_num))
-
-for (sem in semaines) {
-  message(">>> Traitement de la semaine ", sem)
-  # 1) On découpe le sous-jeu de données
-  df_sem <- subset(resultats_codachats, semaine_num == sem)
-  
-  # ——————— Poids (Kg/personne/jour) ———————
-  # Création de Nourriture_consommee
-  Nourriture_consommee <- data.frame(
-    Identifiant        = df_sem$Identifiant,
-    groupe_TI_TdC      = df_sem$groupe_TI_TdC1,
-    Poids_vf_consommee = df_sem$Poids_consomme_vf
-  )
-  # colonnes par catégorie
-  categories <- unique(Nourriture_consommee$groupe_TI_TdC)
-  for (categorie in categories) {
-    col <- paste0(categorie, "_CARNET")
-    Nourriture_consommee[[col]] <- ifelse(
-      Nourriture_consommee$groupe_TI_TdC == categorie,
-      Nourriture_consommee$Poids_vf_consommee,
-      0
-    )
-  }
-  # on supprime les anciennes colonnes
-  Nourriture_consommee <- subset(
-    Nourriture_consommee,
-    select = -c(groupe_TI_TdC, Poids_vf_consommee, NA_CARNET)
-  )
-  
-  # Agrégation Carnet_POIDS
-  library(dplyr)
-  library(ggplot2)
-  library(tidyr)
-  
-  # UC_TI moyen par Identifiant
-  Carnet_POIDS <- aggregate(UC_TI ~ Identifiant, df_sem, mean)
-  # agrégation de chaque colonne « *_CARNET »
-  colonnes_poids <- names(Nourriture_consommee)[-1]
-  for (colonne in colonnes_poids) {
-    Temp <- aggregate(
-      formula(paste0(colonne, " ~ Identifiant")),
-      data = Nourriture_consommee,
-      FUN  = sum
-    )
-    Carnet_POIDS <- left_join(Carnet_POIDS, Temp, by = "Identifiant")
-  }
-  Carnet_POIDS$AUTRE_CARNET <- NULL
-  
-  # normalisation par UC_TI * 7
-  Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <-
-    Carnet_POIDS[, 3:ncol(Carnet_POIDS)] /
-    (Carnet_POIDS$UC_TI *7 )
-  
-  Carnet_POIDS$SOMME_CARNET_POIDS <- rowSums(
-    Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE
-  )
-  Carnet_POIDS$SOMME_CARNET_HORS_BOISSON <- with(
-    Carnet_POIDS,
-    SOMME_CARNET_POIDS -
-      ALCOOL_CARNET -
-      FRUITS_JUS_CARNET -
-      LAIT_CARNET -
-      EAU_CARNET -
-      SODAS_LIGHT_CARNET -
-      SODAS_SUCRES_CARNET
-  )
-  assign(paste0("Carnet_POIDS_sem", sem), Carnet_POIDS)
-  
-  # On renomme toutes les colonnes sauf Identifiant
-  Carnet_POIDS <- Carnet_POIDS %>%
-    rename_with(~ paste0(.x, "_sem", sem), -Identifiant)
-  
-  # on crée l’objet Carnet_POIDS_sem1, _sem2, …
-  assign(paste0("Carnet_POIDS_sem", sem), Carnet_POIDS)
-
-}
-
-###Par jour -------------------
-resultats_codachats$jour_num <- floor(as.numeric(resultats_codachats$Date_vf - resultats_codachats$date_starting) + 1)
-tab <- table(resultats_codachats$jour_num)
-#Les identifiants qui dépassent 29 sont ceux qui ont pris des vacances
-
-pct <- prop.table(tab) * 100
-round(pct, 1)
-
-identifiants_30_plus <- resultats_codachats %>%
-  filter(jour_num > 29) %>%      # on ne garde que les jours au-delà de 29
-  distinct(Identifiant) %>%      # on sélectionne les identifiants uniques
-  arrange(Identifiant)    
-
-
-print(unique(identifiants_30_plus$Identifiant))
-# 1) Prendre en compte UC_TI et sommer par ID × catégorie × jour
-
-tab_cumul_cat_norm <- resultats_codachats %>%
-  # 1) Remplir UC_TI manquants par Identifiant
-  group_by(Identifiant) %>%
-  fill(UC_TI, .direction = "downup") %>%
-  ungroup() %>%
-  
-  # 2) Somme des poids journaliers par catégorie
-  group_by(Identifiant,
-           categorie = groupe_TI_TdC1,
-           jour_num,
-           UC_TI) %>%
-  summarise(poids_jour = sum(Poids_consomme_vf, na.rm = TRUE),
-            .groups = "drop") %>%
-  
-  # 3) Ne garder que les jours 1 à 29
-  filter(jour_num <= 29) %>%
-  
-  # 4) Compléter les jours manquants 1–29 à 0
-  complete(
-    Identifiant, categorie,
-    jour_num = 1:29,
-    fill = list(poids_jour = 0)
-  ) %>%
-  arrange(Identifiant, categorie, jour_num) %>%
-  
-  # 5) Calcul du cumul par catégorie
-  group_by(Identifiant, categorie) %>%
-  mutate(cumul_cat = cumsum(poids_jour)) %>%
-  ungroup()
-
-tab_cumul_cat_norm <- tab_cumul_cat_norm %>%
-  filter(jour_num <= 29)
-
-tab_cumul_cat_norm <- tab_cumul_cat_norm %>%
-  group_by(Identifiant) %>%
-  fill(UC_TI, .direction = "downup") %>%
-  ungroup()
-
-tab_cumul_cat_norm$poids_jour <- tab_cumul_cat_norm$poids_jour / tab_cumul_cat_norm$UC_TI
-tab_cumul_cat_norm$cumul_cat <- tab_cumul_cat_norm$cumul_cat / tab_cumul_cat_norm$UC_TI
 
 
 ## Verification du prix au kg des données imputées = ---------------------------
 #On calcule le prix au kg. 
-
-
-
-
 
 Nourriture_consommee <- data.frame(resultats_codachats$Identifiant, resultats_codachats$groupe_TI_TdC1, resultats_codachats$Poids_consomme_vf  )
 names(Nourriture_consommee)[1:3] = c("Identifiant", "groupe_TI_TdC","Poids_vf_consommee")
@@ -1392,7 +1258,7 @@ names(Nourriture_consommee)[1:3] = c("Identifiant", "groupe_TI_TdC","Poids_vf_co
 categories <- unique(Nourriture_consommee$groupe_TI_TdC)
 # Boucle pour créer les colonnes correspondantes dans Nourriture_consommee
 for (categorie in categories) {
-  Nourriture_consommee[[paste0(categorie, "_CARNET")]] <- ifelse(Nourriture_consommee$groupe_TI_TdC == categorie, Nourriture_consommee$Poids_vf_consomme, 0)}
+  Nourriture_consommee[[paste0(categorie, "_CARNET")]] <- ifelse(Nourriture_consommee$groupe_TI_TdC == categorie, Nourriture_consommee$Poids_vf_consommee, 0)}
 # Supprimer les colonnes "groupe_TI_TdC" et "Poids_vf_consomme" si besoin
 Nourriture_consommee <- subset(Nourriture_consommee, select = -c(groupe_TI_TdC, Poids_vf_consommee, NA_CARNET))
 
@@ -1400,7 +1266,6 @@ Nourriture_consommee <- subset(Nourriture_consommee, select = -c(groupe_TI_TdC, 
 # Agrégation pour le dataframe Carnet_POIDS
 Carnet_POIDS <- aggregate(UC_TI ~ Identifiant, resultats_codachats, mean)
 resultats_codachats$Combien.de.personnes.vivent.dans.votre.foyer <- as.numeric(resultats_codachats$Combien.de.personnes.vivent.dans.votre.foyer)
-#Carnet_POIDS <- aggregate(Combien.de.personnes.vivent.dans.votre.foyer ~ Identifiant, resultats_codachats, mean)
 # Liste des noms de colonnes à agréger
 colonnes <- names(Nourriture_consommee)[-1] # Exclure la colonne "Identifiant"
 # Boucle pour agréger les données par colonne
@@ -1415,21 +1280,39 @@ Carnet_POIDS$AUTRE_CARNET <- NULL
 Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <- Carnet_POIDS[, 3:NCOL(Carnet_POIDS)] / (Carnet_POIDS$UC_TI*Nj)
 #Carnet_POIDS[, 3:ncol(Carnet_POIDS)] <- Carnet_POIDS[, 3:NCOL(Carnet_POIDS)] / (Carnet_POIDS$Combien.de.personnes.vivent.dans.votre.foyer*Nj)
 # Calculer la somme des colonnes pour chaque ligne
-Carnet_POIDS$SOMME_CARNET_POIDS <- rowSums(Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE)
+Carnet_POIDS$POIDS_TOTAL_CARNET <- rowSums(Carnet_POIDS[, 3:ncol(Carnet_POIDS)], na.rm = TRUE)
 # Calculer la somme des colonnes hors boisson
-Carnet_POIDS$SOMME_CARNET_HORS_BOISSON <- with(Carnet_POIDS, SOMME_CARNET_POIDS - 
+Carnet_POIDS$POIDS_HORS_BOISSON_CARNET <- with(Carnet_POIDS, POIDS_TOTAL_CARNET - 
                                                  ALCOOL_CARNET - 
                                                  FRUITS_JUS_CARNET - 
                                                  LAIT_CARNET - 
                                                  EAU_CARNET - 
                                                  SODAS_LIGHT_CARNET - 
-                                                 SODAS_SUCRES_CARNET)
+                                                 SODAS_SUCRES_CARNET -
+                                                 CAFE_THE_CARNET)
 
 
+#Ajout suffixe _Poids
+Carnet_POIDS <- Carnet_POIDS %>%
+  rename_with(
+    ~ ifelse(
+      grepl("_CARNET$", .x),
+      paste0(.x, "_Poids"),
+      .x
+    ),
+    .cols = -any_of(c("Identifiant", "UC_TI"))
+  )
 
   ## Kcal (Kcal/personne/jour)------------------------------------------
 #Pour chaque aliment, nous imputons sa valeur nutritionnelle en kcal / kg en fonction du poids consommé de chaque aliment.
 resultats_codachats$kcal_aliment_vf <- resultats_codachats$nrj_kcal*10*resultats_codachats$Poids_consomme_vf
+
+resultats_codachats$kcal_aliment_vf <- ifelse((resultats_codachats$Lieu2 != "RHD" & resultats_codachats$groupe_TI_TdC1 == "CAFE_THE" ),(resultats_codachats$kcal_aliment_vf/ resultats_codachats$Sec_Vol),(resultats_codachats$kcal_aliment_vf))
+
+
+
+
+
 #Pour chaque aliment consommé, nous imputons sa valeur nutritionnelle en kj / kg sur la base du poids consommé.
 Kcal_consommee <- data.frame(resultats_codachats$Identifiant, resultats_codachats$groupe_TI_TdC1, resultats_codachats$kcal_aliment_vf  )
 names(Kcal_consommee)[1:3] = c("Identifiant", "groupe_TI_TdC","kcal_aliment_vf")
@@ -1457,257 +1340,33 @@ for (colonne in colonnes) {
 Carnet_KCAL$AUTRE_CARNET <- NULL
 Carnet_KCAL[, 3:ncol(Carnet_KCAL)] <- Carnet_KCAL[, 3:NCOL(Carnet_KCAL)] / (Carnet_KCAL$UC_TI* Nj)
 # Calculer la somme des colonnes  pour chaque ligne
-Carnet_KCAL$SOMME_CARNET_KCAL <- rowSums(Carnet_KCAL[, 3:ncol(Carnet_KCAL)], na.rm = TRUE)
+Carnet_KCAL$KCAL_TOTAL_CARNET <- rowSums(Carnet_KCAL[, 3:ncol(Carnet_KCAL)], na.rm = TRUE)
 # Calculer la somme des colonnes hors boisson
-Carnet_KCAL$SOMME_CARNET_HORS_BOISSON <- with(Carnet_KCAL, SOMME_CARNET_KCAL - 
-                                                 ALCOOL_CARNET - 
-                                                 FRUITS_JUS_CARNET - 
-                                                 LAIT_CARNET - 
-                                                 EAU_CARNET - 
-                                                 SODAS_LIGHT_CARNET - 
-                                                 SODAS_SUCRES_CARNET)
-
-Carnet_KCAL$KCAL_SANS_ALCOOL <-  with(Carnet_KCAL, SOMME_CARNET_KCAL - ALCOOL_CARNET )
-Carnet_KCAL$KCAL_SANS_BOISSON <-  with(Carnet_KCAL, SOMME_CARNET_KCAL - ALCOOL_CARNET -  SODAS_LIGHT_CARNET - SODAS_SUCRES_CARNET - EAU_CARNET - FRUITS_JUS_CARNET - LAIT_CARNET )
+Carnet_KCAL$KCAL_HORS_BOISSON_CARNET <- with(Carnet_KCAL, KCAL_TOTAL_CARNET - 
+                                               ALCOOL_CARNET - 
+                                               FRUITS_JUS_CARNET - 
+                                               LAIT_CARNET - 
+                                               EAU_CARNET - 
+                                               SODAS_LIGHT_CARNET - 
+                                               SODAS_SUCRES_CARNET - 
+                                               CAFE_THE_CARNET)
 
 
-# Calculer la somme des calories par individu
-calories_par_individu <- Carnet_KCAL %>%
-  group_by(Identifiant) %>%
-  summarise(somme_calories = sum(SOMME_CARNET_KCAL, na.rm = TRUE))
 
-# Créer l'histogramme de la distribution des calories
-ggplot(calories_par_individu, aes(x = somme_calories)) +
-  geom_histogram(binwidth = 100, fill = "blue", color = "black", alpha = 0.7) +
-  labs(title = "Distribution des Calories par Individu",
-       x = "Somme des Calories",
-       y = "Nombre d'Individus") +
-  theme_minimal()
-
-
-  ## Calcul de MAR et MER
-  ##MAR /MER--------------------------------------
-
-    ###Calcul de la vitamine A --------------------------
-###Calcul de la vitamine A --------------------------
-resultats_codachats$vit_a_mcg <- (resultats_codachats$retinol_mcg + (resultats_codachats$beta_carotene_mcg/6)) 
-
-#Ajout des dernières colonnes modifiées
-resultats_codachats$proteines_g_alim <- resultats_codachats$Poids_consomme_vf * resultats_codachats$proteines_g *10 /(resultats_codachats$UC_TI*Nj)
-resultats_codachats$proteines_kcal_alim <- ((resultats_codachats$proteines_g*4) * resultats_codachats$Poids_consomme_vf *10 )/(resultats_codachats$UC_TI*Nj)
-
-resultats_codachats$ag_18_2_lino_g_alim  <- (resultats_codachats$Poids_consomme_vf * resultats_codachats$ag_18_2_lino_g*10 )/(resultats_codachats$UC_TI*Nj)
-resultats_codachats$ag_18_2_lino_kcal_alim   <- (resultats_codachats$Poids_consomme_vf *resultats_codachats$ag_18_2_lino_g*9*10 )/(resultats_codachats$UC_TI*Nj)
-
-resultats_codachats$ag_18_3_a_lino_g_alim<- (resultats_codachats$Poids_consomme_vf *  resultats_codachats$ag_18_3_a_lino_g*10 )/(resultats_codachats$UC_TI*Nj)
-resultats_codachats$ag_18_3_a_lino_kcal_alim <- (resultats_codachats$Poids_consomme_vf *resultats_codachats$ag_18_3_a_lino_g*9*10 )/(resultats_codachats$UC_TI*Nj)
-resultats_codachats$ags_g_alim  <- (resultats_codachats$ags_g* resultats_codachats$Poids_consomme_vf  * 10)/(resultats_codachats$UC_TI*Nj)
-resultats_codachats$ags_kcal_alim <- (resultats_codachats$ags_g *9* resultats_codachats$Poids_consomme_vf  * 10)/(resultats_codachats$UC_TI*Nj)
+#Ajout suffixe _KCAL
+Carnet_KCAL <- Carnet_KCAL %>%
+  rename_with(
+    ~ ifelse(
+      grepl("_CARNET$", .x),
+      paste0(.x, "_Kcal"),
+      .x
+    ),
+    .cols = -any_of(c("Identifiant", "UC_TI"))
+  )
 
 
-    ### Calcul des quantités de nutriments par aliment -----------------
-# Sélection des colonnes à transformer
 
-colonnes_a_transformer<- c("retinol_mcg", "nrj_kcal", "beta_carotene_mcg","proteines_g", "fibres_g","ag_18_2_lino_g", "ag_18_3_a_lino_g", "ag_20_6_dha_g",
-                           "magnesium_mg", "potassium_mg", "calcium_mg", "fer_mg", "cuivre_mg", "zinc_mg","phosphore_mg",
-                           "selenium_mcg", "iode_mcg","vitamine_d_mcg", "vitamine_e_mg", "vitamine_c_mg",
-                           "vitamine_b1_mg", "vitamine_b2_mg", "vitamine_b3_mg","vitamine_b6_mg", "vitamine_b9_mcg", "vitamine_b12_mcg",
-                           "alcool_g", "sodium_mg", "fructose_g", "glucose_g", "maltose_g", "saccharose_g", "ags_g", "retinol_mcg" , "beta_carotene_mcg", "vit_a_mcg")
-
-
-# Vérifier si toutes les colonnes sont présentes
-colonnes_manquantes <- setdiff(colonnes_a_transformer, names(resultats_codachats))
-if (length(colonnes_manquantes) > 0) {
-  stop("Les colonnes suivantes ne sont pas reconnues : ", paste(colonnes_manquantes, collapse = ", "))
-}
-
-# Si tout est correct, appliquer la transformation
-resultats_codachats <- resultats_codachats %>%
-  mutate(across(all_of(colonnes_a_transformer),
-                ~ . * Poids_consomme_vf * 10 / (UC_TI * Nj),
-                .names = "{.col}_alim"))
-
-
-#HENI_alim 
-resultats_codachats$HENI_score <- (resultats_codachats$HENI  * 1000* resultats_codachats$Poids_consomme_vf)
-  
-    ### Somme par ID des nutriments d'interet --------------------------
-resultats_codachats$budget_alim <- as.numeric(resultats_codachats$budget_alim)
-colonnes_a_sommer <- names(resultats_codachats)[grep("_alim$|HENI_score", names(resultats_codachats))]
-print(colonnes_a_sommer)  # Debugging check
-
-somme_par_identifiant <- resultats_codachats %>%
-  group_by(Identifiant) %>%
-  summarise(across(
-    all_of(colonnes_a_sommer), 
-    ~ sum(.x, na.rm = TRUE)
-    
-  ))
-
-
-#Somme des sucres 
-somme_par_identifiant$sucre_aj_g_appro_alim <- somme_par_identifiant$fructose_g_alim+ somme_par_identifiant$glucose_g_alim + somme_par_identifiant$maltose_g_alim + somme_par_identifiant$saccharose_g_alim
-
-#Calcul des nutriments sans alcool
-cols_to_extract <- c("Identifiant", "UC_TI","KCAL_SANS_ALCOOL" , "SOMME_CARNET_KCAL") 
-extracted_df <- Carnet_KCAL[, cols_to_extract]
-somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
-cols_to_extract <- c("Identifiant", "Sexe") 
-extracted_df <- metadata[, cols_to_extract]
-somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
-
-#Calcul dernières colonnes 
-somme_par_identifiant$proteines_kcal_2000 <- (somme_par_identifiant$proteines_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$fibres_g_2000 <- (somme_par_identifiant$fibres_g_alim*2000)/  somme_par_identifiant$SOMME_CARNET_KCAL
-somme_par_identifiant$ag_18_3_a_lino_g_2000 <- (somme_par_identifiant$ag_18_3_a_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$ag_18_2_lino_g_2000 <- (somme_par_identifiant$ag_18_2_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
-somme_par_identifiant$ag_20_6_dha_g_2000 <- (somme_par_identifiant$ag_20_6_dha_g_alim*2000)/(somme_par_identifiant$SOMME_CARNET_KCAL)
-
-somme_par_identifiant$ags_kcal_2000 <- (somme_par_identifiant$ags_kcal_alim *100) /(somme_par_identifiant$KCAL_SANS_ALCOOL)
-
-    ### Rajustement / 2000 KCAL---------------------------------------
-exclude_cols <-  c("proteines_kcal_alim", "ags_kcal_alim", "ag_18_2_lino_g_alim", "ag_18_3_a_lino_g_alim","ag_18_3_a_lino_kcal_alim",
-                   "ags_g_alim","proteines_g_alim" ,"fructose_g_alim"  ,"maltose_g_alim"       ,   "glucose_g_alim"    , "saccharose_g_alim", "alcool_g_alim",
-                   "ag_18_2_lino_kcal_alim", "fibres_g_alim", "ag_20_6_dha_g_alim","DQR_alim", "EF_alim", "climat_alim","couche_ozone_alim" , 
-                   "ions_alim","ozone_alim" , "partic_alim" ,"acid_alim","eutro_terr_alim","eutro_eau_alim"    ,     "eutro_mer_alim"    ,    
-                   "sol_alim"   ,"toxi_eau_alim","ress_eau_alim", "ress_ener_alim"    , "budget_alim"   ,"ress_min_alim")
-alim_cols <- grep("_alim$", names(somme_par_identifiant), value = TRUE)
-alim_cols <- setdiff(alim_cols, exclude_cols)
-for (col in alim_cols) {
-  somme_par_identifiant[[col]] <- (somme_par_identifiant[[col]] * 2000) / somme_par_identifiant$SOMME_CARNET_KCAL
-  new_col_name <- sub("_alim$", "_2000", col)
-  names(somme_par_identifiant)[names(somme_par_identifiant) == col] <- new_col_name
-}
-
-### Calcul des ratios du MAR------------------------
-# Les recommandations communes, peu importe le genre
-somme_par_identifiant$ratio_prot <- ifelse(somme_par_identifiant$proteines_kcal_2000 / 10 > 1, 1, somme_par_identifiant$proteines_kcal_2000/ 10)
-somme_par_identifiant$ratio_fibre <- ifelse(somme_par_identifiant$fibres_g_2000 / 30 > 1, 1, somme_par_identifiant$fibres_g_2000 / 30)
-somme_par_identifiant$ratio_lino <- ifelse(somme_par_identifiant$ag_18_2_lino_g_2000/ 4 > 1, 1, somme_par_identifiant$ag_18_2_lino_g_2000 / 4)
-somme_par_identifiant$ratio_alphalino <- ifelse(somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1 > 1, 1, somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1)
-somme_par_identifiant$ratio_dha <- ifelse(somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25 > 1, 1, somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25)
-somme_par_identifiant$ratio_potassium <- ifelse(somme_par_identifiant$potassium_mg_2000 / 3500 > 1, 1, somme_par_identifiant$potassium_mg_2000 / 3500)
-somme_par_identifiant$ratio_calcium <- ifelse(somme_par_identifiant$calcium_mg_2000 / 950 > 1, 1, somme_par_identifiant$calcium_mg_2000 / 950)
-somme_par_identifiant$ratio_selenium <- ifelse(somme_par_identifiant$selenium_mcg_2000 / 70 > 1, 1, somme_par_identifiant$selenium_mcg_2000 / 70)
-somme_par_identifiant$ratio_iode <- ifelse(somme_par_identifiant$iode_mcg_2000 / 150 > 1, 1, somme_par_identifiant$iode_mcg_2000 / 150)
-somme_par_identifiant$ratio_vit_d <- ifelse(somme_par_identifiant$vitamine_d_mcg_2000 / 15 > 1, 1, somme_par_identifiant$vitamine_d_mcg_2000 / 15)
-somme_par_identifiant$ratio_vit_c <- ifelse(somme_par_identifiant$vitamine_c_mg_2000 / 110 > 1, 1, somme_par_identifiant$vitamine_c_mg_2000 / 110)
-somme_par_identifiant$ratio_vit_b2 <- ifelse(somme_par_identifiant$vitamine_b2_mg_2000 / 1.6 > 1, 1, somme_par_identifiant$vitamine_b2_mg_2000 / 1.6)
-somme_par_identifiant$ratio_vit_b12 <- ifelse(somme_par_identifiant$vitamine_b12_mcg_2000 / 4 > 1, 1, somme_par_identifiant$vitamine_b12_mcg_2000 / 4)
-somme_par_identifiant$ratio_vit_b9 <- ifelse(somme_par_identifiant$vitamine_b9_mcg_2000 / 330 > 1, 1, somme_par_identifiant$vitamine_b9_mcg_2000 / 330)
-
-
-#somme_par_identifiant$ratio_prot <- somme_par_identifiant$proteines_kcal_2000 / 10 
-#somme_par_identifiant$ratio_fibre <- somme_par_identifiant$fibres_g_2000 / 30 
-#somme_par_identifiant$ratio_lino <- somme_par_identifiant$ag_18_2_lino_g_2000/ 4 
-#somme_par_identifiant$ratio_alphalino <- somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1 
-#somme_par_identifiant$ratio_dha <- somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25
-#somme_par_identifiant$ratio_potassium <- somme_par_identifiant$potassium_mg_2000 / 3500 
-#somme_par_identifiant$ratio_calcium <- somme_par_identifiant$calcium_mg_2000 / 950 
-#somme_par_identifiant$ratio_selenium <- somme_par_identifiant$selenium_mcg_2000 / 70
-#somme_par_identifiant$ratio_iode <- somme_par_identifiant$iode_mcg_2000 / 150 
-#somme_par_identifiant$ratio_vit_d <- somme_par_identifiant$vitamine_d_mcg_2000 / 15
-#somme_par_identifiant$ratio_vit_c <- somme_par_identifiant$vitamine_c_mg_2000 / 110
-#somme_par_identifiant$ratio_vit_b2 <- somme_par_identifiant$vitamine_b2_mg_2000 / 1.6
-#somme_par_identifiant$ratio_vit_b12 <- somme_par_identifiant$vitamine_b12_mcg_2000 / 4
-#somme_par_identifiant$ratio_vit_b9 <- somme_par_identifiant$vitamine_b9_mcg_2000 / 330
-
-
-# Définir une fonction pour calculer le ratio
-calculate_ratio <- function(sexe, valeur, seuil_femme, seuil_homme) {
-  if (sexe == "Femme") {
-    return(ifelse(valeur / seuil_femme > 1, 1, valeur / seuil_femme))
-  } else if (sexe == "Homme") {
-    return(ifelse(valeur / seuil_homme > 1,1, valeur / seuil_homme))
-  } else {
-    return(NA)
-  }
-}
-
-## Appliquer la fonction pour chaque nutriment
-somme_par_identifiant$ratio_magnesium <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$magnesium_mg_2000, 300, 380)
-somme_par_identifiant$ratio_fer <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$fer_mg_2000, 16, 11)
-somme_par_identifiant$ratio_cuivre <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$cuivre_mg_2000, 1.5, 1.9) 
-somme_par_identifiant$ratio_zinc <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$zinc_mg_2000, 9.3, 11.7)
-somme_par_identifiant$ratio_vit_a <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vit_a_mcg_2000, 650, 750)
-somme_par_identifiant$ratio_vit_e <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_e_mg_2000, 9, 10)
-somme_par_identifiant$ratio_vit_b1 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b1_mg_2000,0.84, 0.84) # #0.1 EN 239 KCAL POUR CONVERTIR MJ ET EN J0. 
-somme_par_identifiant$ratio_vit_b3 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b3_mg_2000, 13.4, 13.4) ##1.6*239 KCAL #14.9, 18.5
-somme_par_identifiant$ratio_vit_b6 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b6_mg_2000, 1.6, 1.7)
-
-
-#oN PREND LA RECO MOYENNE HOMME / FEMME
-#somme_par_identifiant$ratio_magnesium <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$magnesium_mg_2000, 340, 340) 
-#somme_par_identifiant$ratio_fer <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$fer_mg_2000, 12.25, 12.25) 
-#somme_par_identifiant$ratio_cuivre <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$cuivre_mg_2000, 1.7, 1.7 ) 
-#somme_par_identifiant$ratio_zinc <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$zinc_mg_2000, 10.5, 10.5)
-#somme_par_identifiant$ratio_vit_a <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vit_a_mcg_2000, 700, 700) 
-#somme_par_identifiant$ratio_vit_e <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_e_mg_2000, 9.5, 9.5) 
-#somme_par_identifiant$ratio_vit_b1 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b1_mg_2000,0.84, 0.84) # #0.1 EN 239 KCAL POUR CONVERTIR MJ ET EN J0. 
-#somme_par_identifiant$ratio_vit_b3 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b3_mg_2000, 13.4, 13.4) ##1.6*239 KCAL #14.9, 18.5
-#somme_par_identifiant$ratio_vit_b6 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b6_mg_2000, 1.65, 1.65) 
-
-### Calcul du MAR -----------------------------------
-
-somme_par_identifiant$MAR <- ((somme_par_identifiant$ratio_prot + somme_par_identifiant$ratio_fibre + somme_par_identifiant$ratio_lino + somme_par_identifiant$ratio_alphalino + somme_par_identifiant$ratio_dha + 
-                                 somme_par_identifiant$ratio_magnesium + somme_par_identifiant$ratio_potassium + somme_par_identifiant$ratio_calcium + somme_par_identifiant$ratio_fer + somme_par_identifiant$ratio_cuivre +
-                                 somme_par_identifiant$ratio_zinc + somme_par_identifiant$ratio_selenium + somme_par_identifiant$ratio_iode + somme_par_identifiant$ratio_vit_a + somme_par_identifiant$ratio_vit_d + 
-                                 somme_par_identifiant$ratio_vit_e + somme_par_identifiant$ratio_vit_c + somme_par_identifiant$ratio_vit_b1 + somme_par_identifiant$ratio_vit_b2 + somme_par_identifiant$ratio_vit_b3 + 
-                                 somme_par_identifiant$ratio_vit_b6 + somme_par_identifiant$ratio_vit_b9 + somme_par_identifiant$ratio_vit_b12)/23)*100;
-mean(somme_par_identifiant$MAR, na.rm=TRUE)
-
-### Ratio pour le MER ----------------------------------------
-# Définir une fonction pour calculer le ratio
-somme_par_identifiant$ratio_ags <- ifelse((somme_par_identifiant$ags_kcal_2000 / 12 < 1),( 1), (somme_par_identifiant$ags_kcal_2000/ 12 ))
-somme_par_identifiant$ratio_sodium  <- ifelse(somme_par_identifiant$sodium_mg_2000/ 2300 < 1, 1, somme_par_identifiant$sodium_mg_2000/ 2300 )
-somme_par_identifiant$ratio_sucre_aj<- ifelse(somme_par_identifiant$sucre_aj_g_appro_2000/100 < 1, 1, somme_par_identifiant$sucre_aj_g_appro_2000/100)
-
-### Calcul du MER -----------------------------------
-somme_par_identifiant$MER <- (((somme_par_identifiant$ratio_ags + somme_par_identifiant$ratio_sodium + somme_par_identifiant$ratio_sucre_aj)*100)/3)-100
-mean(somme_par_identifiant$MER)
-mean(somme_par_identifiant$MAR)
-
-
-    somme_par_identifiant$t_ratio_prot <- (somme_par_identifiant$proteines_kcal_2000 / 10)*100
-    somme_par_identifiant$t_ratio_fibre <-(somme_par_identifiant$fibres_g_2000 / 30)*100
-    somme_par_identifiant$t_ratio_lino <-(somme_par_identifiant$ag_18_2_lino_g_2000/ 4 )*100# (!!)
-    somme_par_identifiant$t_ratio_alphalino <-(somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1)*100
-    somme_par_identifiant$t_ratio_dha <-(somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25 )*100
-    somme_par_identifiant$t_ratio_potassium <-(somme_par_identifiant$potassium_mg_2000 / 3500 )*100
-    somme_par_identifiant$t_ratio_calcium <-(somme_par_identifiant$calcium_mg_2000 / 950 )*100
-    somme_par_identifiant$t_ratio_selenium <-(somme_par_identifiant$selenium_mcg_2000 / 70)*100
-    somme_par_identifiant$t_ratio_iode <-(somme_par_identifiant$iode_mcg_2000 / 150 )*100
-    somme_par_identifiant$t_ratio_vit_d <-(somme_par_identifiant$vitamine_d_mcg_2000 / 15)*100
-    somme_par_identifiant$t_ratio_vit_c <-(somme_par_identifiant$vitamine_c_mg_2000 / 110)*100
-    somme_par_identifiant$t_ratio_vit_b2 <-(somme_par_identifiant$vitamine_b2_mg_2000 / 1.6)*100
-    somme_par_identifiant$t_ratio_vit_b12 <-(somme_par_identifiant$vitamine_b12_mcg_2000 / 4 )*100
-    somme_par_identifiant$t_ratio_vit_b9 <-(somme_par_identifiant$vitamine_b9_mcg_2000 / 330)*100
-    somme_par_identifiant$t_ratio_magnesium <-  (somme_par_identifiant$magnesium_mg_2000/ 340)*100
-    somme_par_identifiant$t_ratio_fer <-  (somme_par_identifiant$fer_mg_2000 / 12.25)*100
-    somme_par_identifiant$t_ratio_cuivre <-  (somme_par_identifiant$cuivre_mg_2000 / 1.7 )*100
-    somme_par_identifiant$t_ratio_zinc <- ( somme_par_identifiant$zinc_mg_2000/ 10.5)*100
-    somme_par_identifiant$t_ratio_vit_a <- ( somme_par_identifiant$vit_a_mcg_2000/ 700 )*100
-    somme_par_identifiant$t_ratio_vit_e <-  (somme_par_identifiant$vitamine_e_mg_2000/ 9.5)*100
-    somme_par_identifiant$t_ratio_vit_b1 <-  (somme_par_identifiant$vitamine_b1_mg_2000/ 0.84)*100 # #0.1 EN 239 KCAL POUR CONVERTIR MJ ET EN J0. 
-    somme_par_identifiant$t_ratio_vit_b3 <-  (somme_par_identifiant$vitamine_b3_mg_2000/13.4)*100##1.6*239 KCAL #14.9t_ratio 18.5
-    somme_par_identifiant$t_ratio_vit_b6 <-  (somme_par_identifiant$vitamine_b6_mg_2000/ 1.65)*100
-    somme_par_identifiant$t_ratio_ags <- (somme_par_identifiant$ags_kcal_2000 / 12 )*100
-    somme_par_identifiant$t_ratio_sodium  <-(somme_par_identifiant$sodium_mg_2000/ 2300 )*100
-    somme_par_identifiant$t_ratio_sucre_aj <-(somme_par_identifiant$sucre_aj_g_appro_2000/100)*100
-
-    ratio_cols <- c("t_ratio_prot", "t_ratio_fibre", "t_ratio_lino", "t_ratio_alphalino", 
-                    "t_ratio_dha", "t_ratio_potassium", "t_ratio_calcium", "t_ratio_selenium", 
-                    "t_ratio_iode", "t_ratio_vit_d", "t_ratio_vit_c", "t_ratio_vit_b2", 
-                    "t_ratio_vit_b12", "t_ratio_vit_b9", "t_ratio_magnesium", "t_ratio_fer", 
-                    "t_ratio_cuivre", "t_ratio_zinc", "t_ratio_vit_a", "t_ratio_vit_e", 
-                    "t_ratio_vit_b1", "t_ratio_vit_b3", "t_ratio_vit_b6", "t_ratio_ags", 
-                    "t_ratio_sodium", "t_ratio_sucre_aj")
-    
-    moyennes_ratios <- colMeans(somme_par_identifiant[, ratio_cols], na.rm = TRUE)
-    table_ratios <- data.frame(Ratio = names(moyennes_ratios), Moyenne = moyennes_ratios)
-    print(table_ratios)
-
-
+Carnet_KCAL$UC_TI <- NULL
 
 #Constitution des tableaux finaux ------------------------------------------------
 Carnet_id <- metadata 
@@ -1724,10 +1383,7 @@ Carnet_id$Mesure <- "Carnet"
 #Carnet_POIDS <- Carnet_POIDS[, !grepl("^Combien.de.personnes.vivent.dans.votre.foyer", names(Carnet_POIDS))]
 Carnet_POIDS <- Carnet_POIDS[, !grepl("UC_TI", names(Carnet_POIDS))]
 Carnet_id <- left_join(Carnet_id, Carnet_POIDS, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem1, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem2, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem3, by='Identifiant')
-Carnet_id <- left_join(Carnet_id, Carnet_POIDS_sem4, by='Identifiant')
+
 Carnet_id <- left_join(Carnet_id, Carnet_KCAL, by='Identifiant')
 
 
@@ -1763,22 +1419,20 @@ writeData(wb, sheet = "Tableau_d'indicateurs", Carnet_id  )
 addWorksheet(wb, "Données_brutes_nettoyées")
 writeData(wb, sheet = "Données_brutes_nettoyées", fichier_nettoyé )
 
-addWorksheet(wb, "tab_cumul_cat_norm")
-writeData(wb, sheet = "tab_cumul_cat_norm", tab_cumul_cat_norm )
 
 
 
 
 if (campaign == "22-11") {
-  saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_nov_22.xlsx")))
+  saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_nov_22.xlsx")))
 }else{ 
   if (campaign == "23-02") {
-    saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_mars_23.xlsx"))) 
+    saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_mars_23.xlsx"))) 
   } else {
     if (campaign == "23-11") {
-      saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_nov_23.xlsx"))) 
+      saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_nov_23.xlsx"))) 
     } else { 
-      saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_mars_24.xlsx"))) 
+      saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/Carnets_Tableaux_mars_24.xlsx"))) 
     }}}
 
 

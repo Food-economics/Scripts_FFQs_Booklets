@@ -1,5 +1,8 @@
 #Importation des packages -------------------
 rm(list = ls())
+
+#install.packages("modelsummary")
+
 library(haven);library(readxl);library(tidyverse);library(openxlsx);library(car);
 library(readxl);library(dplyr);library(broom);library(scales);library(modelsummary)
 library(ggplot2);library(effsize);library(lfe);library(ggpubr);library(vtable)
@@ -10,17 +13,25 @@ library("htmltools"); library(clubSandwich);library(Matrix); library(lme4)
 library(cobalt); library(knitr); library(tableone); library(purrr); library("plotly")
 library("htmlwidgets")
 library(ggrepel)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(forcats)
+library(purrr)
+library(ggplot2)
+library(scales)
 
+#"C:\Users\denieul-barbot\Dropbox\Thèse\Article_3\Données analyses - Article N°2 FFQvsCarnets\Fichiers nettoyés\Fichiers traités\sgsdata.xlsx"
 #Chargement de l'environnement de travail -----------------
-researcher<-"adenieul" #"vbellassen" edumont
-if (researcher == "adenieul") { setwd <- paste0("C:/Users/adenieul/ownCloud - Anaelle Denieul@cesaer-datas.inra.fr/TI Dijon/donnees")
-} else { setwd(paste0("C:/Users/",researcher,"/Owncloud/TI Dijon/donnees"))}
-sgsdata_CSGA  <- read.xlsx((paste("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata.xlsx", sep="")))
-sgsdata_TI <-read.xlsx((paste("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata_IT.xlsx", sep="")))
-sgsdata_nudges  <- read.xlsx((paste("Données analysées - Article N°4- Nudge/Fichiers_nettoyés/Fichier_traité/sgsdata_nudges.xlsx", sep="")))
+#researcher<-"denieul-barbot" 
+#if (researcher == "denieul-barbot") { setwd <- paste0("C:/Users/denieul-barbot/Dropbox/Thèse/")
+#} else { setwd(paste0("C:/Users/",researcher,"/Dropbox/Thèse/"))}
 
+sgsdata_CSGA  <- read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata.xlsx", sep="")))
+sgsdata_TI <-read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata_IT.xlsx", sep="")))
+sgsdata_nudges  <- read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_4/Fichiers_nettoyés/Fichier_traité/sgsdata_nudges.xlsx", sep="")))
 
-FFQ_NOV_23 <- read.xlsx((paste("Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_FFQ.xlsx", sep="")))
+FFQ_NOV_23 <- read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_FFQ.xlsx", sep="")))
 sgsdata_TI <- sgsdata_TI 
 #Indiquer la campagne
 sgsdata_TI <- sgsdata_TI %>%mutate(Campagne = if_else(str_detect(Identifiant, "PS|LE"),2,1))
@@ -33,14 +44,17 @@ sgsdata_TI <- sgsdata_TI %>%
 #Completer les espaces vides par 0 
 fill_zero <- function(df) { df %>%mutate(across(everything(),~ ifelse(is.na(.) | . == "", 0, .)))}
 
+
+#TEST 
+#sgsdata_CSGA <- sgsdata_CSGA %>%
+#  filter(!str_detect(Identifiant, "azvpkt"))
+#
+
 sgsdata_TI             <- fill_zero(sgsdata_TI)
 sgsdata_CSGA      <- fill_zero(sgsdata_CSGA)
 sgsdata_nudges <- fill_zero(sgsdata_nudges)
 
-#SUpprimer les colonnes semaines 
-sgsdata_TI      <- sgsdata_TI      %>% select(-contains("_sem"))
-sgsdata_CSGA    <- sgsdata_CSGA    %>% select(-contains("_sem"))
-sgsdata_nudges  <- sgsdata_nudges  %>% select(-contains("_sem"))
+
 
 sgsdata_FFQ_CSGA <- sgsdata_CSGA %>% filter(Mesure != "Carnet") 
 sgsdata_Booklet_CSGA <- sgsdata_CSGA %>% filter(Mesure == "Carnet")
@@ -54,15 +68,21 @@ sgsdata_FFQ_CSGA <- sgsdata_FFQ_CSGA %>%
 sgsdata_FFQ_CSGA$FV_Poids <- sgsdata_FFQ_CSGA$FRUITS_Poids + sgsdata_FFQ_CSGA$FRUITS_SECS_Poids  + sgsdata_FFQ_CSGA$NOIX_Poids + sgsdata_FFQ_CSGA$LEGUMES_Poids 
 sgsdata_FFQ_CSGA$FEC_Poids <- sgsdata_FFQ_CSGA$FEC_NON_RAF_Poids + sgsdata_FFQ_CSGA$FEC_RAF_Poids
 sgsdata_FFQ_CSGA$PDTS_LAITIERS_Poids <- sgsdata_FFQ_CSGA$LAIT_Poids + sgsdata_FFQ_CSGA$LAITAGES_Poids + sgsdata_FFQ_CSGA$FROMAGES_Poids
-sgsdata_FFQ_CSGA$POULET_OEUFS_Poids <- sgsdata_FFQ_CSGA$POULET_Poids + sgsdata_FFQ_CSGA$OEUFS_Poids
 sgsdata_FFQ_CSGA$AUTRE_PDTS_ANIMAUX_Poids <- sgsdata_FFQ_CSGA$CHARCUTERIE_HORS_JB_Poids 
-sgsdata_FFQ_CSGA$VIANDE_ROUGE_PORC_Poids <- sgsdata_FFQ_CSGA$VIANDE_ROUGE_Poids+ sgsdata_FFQ_CSGA$PORC_Poids
 sgsdata_FFQ_CSGA$PDTS_DISCRETIONNAIRES_Poids <- sgsdata_FFQ_CSGA$SNACKS_AUTRES_Poids +  sgsdata_FFQ_CSGA$CEREALES_PD_Poids + sgsdata_FFQ_CSGA$PDTS_SUCRES_Poids
+sgsdata_FFQ_CSGA$POULET_OEUFS_Poids <- sgsdata_FFQ_CSGA$POULET_Poids + sgsdata_FFQ_CSGA$OEUFS_Poids
+sgsdata_FFQ_CSGA$VIANDE_ROUGE_PORC_Poids <- sgsdata_FFQ_CSGA$VIANDE_ROUGE_Poids+ sgsdata_FFQ_CSGA$PORC_Poids
+
 sgsdata_FFQ_CSGA$SSB_Poids <-  sgsdata_FFQ_CSGA$SODAS_SUCRES_Poids + sgsdata_FFQ_CSGA$SODAS_LIGHT_Poids +sgsdata_FFQ_CSGA$FRUITS_JUS_Poids 
-sgsdata_FFQ_CSGA$SOMME_KCAL_Poids <- sgsdata_FFQ_CSGA$SOMME_KCAL
-sgsdata_FFQ_CSGA$SOMME_HORS_BOISSON_Poids <-sgsdata_FFQ_CSGA$SOMME_HORS_BOISSON
-sgsdata_FFQ_CSGA$SOMME_POIDS_Poids <- sgsdata_FFQ_CSGA$SOMME_POIDS
-sgsdata_FFQ_CSGA$VIANDES_Poids <- sgsdata_FFQ_CSGA$POULET_OEUFS_Poids + sgsdata_FFQ_CSGA$VIANDE_ROUGE_PORC_Poids + sgsdata_FFQ_CSGA$AUTRE_PDTS_ANIMAUX_Poids
+sgsdata_FFQ_CSGA$VIANDES_Poids <- sgsdata_FFQ_CSGA$POULET_OEUFS_Poids   + sgsdata_FFQ_CSGA$VIANDE_ROUGE_PORC_Poids + sgsdata_FFQ_CSGA$AUTRE_PDTS_ANIMAUX_Poids
+
+
+sgsdata_FFQ_CSGA$SOMME_KCAL_Poids <- sgsdata_FFQ_CSGA$KCAL_TOTAL_Kcal
+sgsdata_FFQ_CSGA$SOMME_HORS_BOISSON_Poids <-sgsdata_FFQ_CSGA$POIDS_HORS_BOISSON_Poids
+sgsdata_FFQ_CSGA$SOMME_POIDS_Poids <- sgsdata_FFQ_CSGA$POIDS_TOTAL_Poids
+
+
+
 sgsdata_Booklet_CSGA <- sgsdata_Booklet_CSGA %>%
   semi_join(sgsdata_FFQ_CSGA, by = "Identifiant") %>%
   select(Identifiant,where(~ !(is.numeric(.) && all(. == 0)))) %>%
@@ -76,9 +96,10 @@ sgsdata_Booklet_CSGA$VIANDE_ROUGE_PORC_Poids <- sgsdata_Booklet_CSGA$VIANDE_ROUG
 sgsdata_Booklet_CSGA$MG_Poids <- sgsdata_Booklet_CSGA$MGA_Poids 
 sgsdata_Booklet_CSGA$PDTS_DISCRETIONNAIRES_Poids <- sgsdata_Booklet_CSGA$SNACKS_AUTRES_Poids +  sgsdata_Booklet_CSGA$CEREALES_PD_Poids + sgsdata_Booklet_CSGA$PDTS_SUCRES_Poids 
 sgsdata_Booklet_CSGA$SSB_Poids <-  sgsdata_Booklet_CSGA$SODAS_SUCRES_Poids + sgsdata_Booklet_CSGA$SODAS_LIGHT_Poids +sgsdata_Booklet_CSGA$FRUITS_JUS_Poids 
-sgsdata_Booklet_CSGA$SOMME_KCAL_Poids <- sgsdata_Booklet_CSGA$SOMME_KCAL
-sgsdata_Booklet_CSGA$SOMME_HORS_BOISSON_Poids <-sgsdata_Booklet_CSGA$SOMME_HORS_BOISSON.x
-sgsdata_Booklet_CSGA$SOMME_POIDS_Poids <- sgsdata_Booklet_CSGA$SOMME_POIDS
+
+sgsdata_Booklet_CSGA$SOMME_KCAL_Poids <- sgsdata_Booklet_CSGA$KCAL_TOTAL_Kcal
+sgsdata_Booklet_CSGA$SOMME_HORS_BOISSON_Poids <-sgsdata_Booklet_CSGA$POIDS_HORS_BOISSON_Poids
+sgsdata_Booklet_CSGA$SOMME_POIDS_Poids <- sgsdata_Booklet_CSGA$POIDS_TOTAL_Poids
 sgsdata_Booklet_CSGA$VIANDES_Poids <- sgsdata_Booklet_CSGA$POULET_OEUFS_Poids + sgsdata_Booklet_CSGA$VIANDE_ROUGE_PORC_Poids + sgsdata_Booklet_CSGA$AUTRE_PDTS_ANIMAUX_Poids
 
 
@@ -112,9 +133,9 @@ sgsdata_FFQ_IT$VIANDE_ROUGE_PORC_Poids <- sgsdata_FFQ_IT$VIANDE_ROUGE_Poids+ sgs
 sgsdata_FFQ_IT$MG_Poids <- sgsdata_FFQ_IT$MGA_Poids 
 sgsdata_FFQ_IT$PDTS_DISCRETIONNAIRES_Poids <- sgsdata_FFQ_IT$SNACKS_AUTRES_Poids +  sgsdata_FFQ_IT$CEREALES_PD_Poids + sgsdata_FFQ_IT$PDTS_SUCRES_Poids 
 sgsdata_FFQ_IT$SSB_Poids <-  sgsdata_FFQ_IT$SODAS_SUCRES_Poids + sgsdata_FFQ_IT$SODAS_LIGHT_Poids +sgsdata_FFQ_IT$FRUITS_JUS_Poids 
-sgsdata_FFQ_IT$SOMME_KCAL_Poids <- sgsdata_FFQ_IT$SOMME_KCAL
-sgsdata_FFQ_IT$SOMME_HORS_BOISSON_Poids <-sgsdata_FFQ_IT$SOMME_HORS_BOISSON
-sgsdata_FFQ_IT$SOMME_POIDS_Poids <- sgsdata_FFQ_IT$SOMME_POIDS
+sgsdata_FFQ_IT$SOMME_KCAL_Poids <- sgsdata_FFQ_IT$KCAL_TOTAL_Kcal
+sgsdata_FFQ_IT$SOMME_HORS_BOISSON_Poids <- sgsdata_FFQ_IT$POIDS_HORS_BOISSON_Poids
+sgsdata_FFQ_IT$SOMME_POIDS_Poids <- sgsdata_FFQ_IT$POIDS_TOTAL_Poids
 sgsdata_FFQ_IT$VIANDES_Poids <- sgsdata_FFQ_IT$POULET_OEUFS_Poids + sgsdata_FFQ_IT$VIANDE_ROUGE_PORC_Poids + sgsdata_FFQ_IT$AUTRE_PDTS_ANIMAUX_Poids
 
 
@@ -131,9 +152,9 @@ sgsdata_Booklet_IT$VIANDE_ROUGE_PORC_Poids <- sgsdata_Booklet_IT$VIANDE_ROUGE_Po
 sgsdata_Booklet_IT$MG_Poids <- sgsdata_Booklet_IT$MGA_Poids 
 sgsdata_Booklet_IT$PDTS_DISCRETIONNAIRES_Poids <- sgsdata_Booklet_IT$SNACKS_AUTRES_Poids +  sgsdata_Booklet_IT$CEREALES_PD_Poids  + sgsdata_Booklet_IT$PDTS_SUCRES_Poids
 sgsdata_Booklet_IT$SSB_Poids <-  sgsdata_Booklet_IT$SODAS_SUCRES_Poids + sgsdata_Booklet_IT$SODAS_LIGHT_Poids +sgsdata_Booklet_IT$FRUITS_JUS_Poids 
-sgsdata_Booklet_IT$SOMME_KCAL_Poids <- sgsdata_Booklet_IT$SOMME_Kcal
-sgsdata_Booklet_IT$SOMME_HORS_BOISSON_Poids <-sgsdata_Booklet_IT$SOMME_HORS_BOISSON_Poids
-sgsdata_Booklet_IT$SOMME_POIDS_Poids <- sgsdata_Booklet_IT$SOMME_Poids
+sgsdata_Booklet_IT$SOMME_KCAL_Poids <- sgsdata_Booklet_IT$KCAL_TOTAL_Kcal
+sgsdata_Booklet_IT$SOMME_HORS_BOISSON_Poids <- sgsdata_Booklet_IT$POIDS_HORS_BOISSON_Poids
+sgsdata_Booklet_IT$SOMME_POIDS_Poids <- sgsdata_Booklet_IT$POIDS_TOTAL_Poids
 sgsdata_Booklet_IT$VIANDES_Poids <- sgsdata_Booklet_IT$POULET_OEUFS_Poids + sgsdata_Booklet_IT$VIANDE_ROUGE_PORC_Poids + sgsdata_Booklet_IT$AUTRE_PDTS_ANIMAUX_Poids
 
 
@@ -280,16 +301,15 @@ sgsdata_Booklet_nudges2 <- pair_nudges2$df1
 sgsdata_FFQ_nudges2     <- pair_nudges2$df2
 
 # --- Choisis les clés d’appariement ---
-# adapte si besoin (ex. ajoute "variable_en" ou "Wave")
-by_keys <- c("Identifiant", "Periode")
+by_keys <- c("source", "Identifiant", "Periode")
 
-# --- Restreindre aux lignes communes des deux jeux ---
-ffq_comm    <- sgsdata_FFQ_all     %>% semi_join(sgsdata_Booklet_all, by = by_keys)
-booklet_comm<- sgsdata_Booklet_all %>% semi_join(sgsdata_FFQ_all, by = by_keys)
+ffq_comm <- sgsdata_FFQ_all %>% 
+  semi_join(sgsdata_Booklet_all, by = by_keys) %>%
+  arrange(across(all_of(by_keys)))
 
-# --- Ordonner pareil pour garantir le même ordre de lignes ---
-ffq_comm     <- ffq_comm     %>% arrange(across(all_of(by_keys)))
-booklet_comm <- booklet_comm %>% arrange(across(all_of(by_keys)))
+booklet_comm <- sgsdata_Booklet_all %>% 
+  semi_join(sgsdata_FFQ_all, by = by_keys) %>%
+  arrange(across(all_of(by_keys)))
 
 
 pair_all <- harmoniser_ids(booklet_comm , ffq_comm)
@@ -301,160 +321,197 @@ analyser_moyennes <- function(ffq_data, booklet_data,
                               suffixes   = c("_Poids"),
                               multiplier = 1000,
                               conf_level = 0.95) {
+  
   library(dplyr)
   library(tidyr)
   
   # --- 0) Alignement si Identifiant présent ---
   if ("Identifiant" %in% names(ffq_data) && "Identifiant" %in% names(booklet_data)) {
-    commun_ids   <- intersect(ffq_data$Identifiant, booklet_data$Identifiant)
-    ffq_data     <- ffq_data     %>% filter(Identifiant %in% commun_ids) %>% arrange(Identifiant)
-    booklet_data <- booklet_data %>% filter(Identifiant %in% commun_ids) %>% arrange(Identifiant)
+    
+    commun_ids <- intersect(ffq_data$Identifiant, booklet_data$Identifiant)
+    
+    ffq_data <- ffq_data %>%
+      filter(Identifiant %in% commun_ids) %>%
+      arrange(Identifiant)
+    
+    booklet_data <- booklet_data %>%
+      filter(Identifiant %in% commun_ids) %>%
+      arrange(Identifiant)
   }
+  
   if (nrow(ffq_data) != nrow(booklet_data)) {
     stop("ffq_data et booklet_data n'ont pas le même nombre de lignes après alignement.")
   }
   
   # --- 1) Colonnes ciblées par suffixe ---
-  motif        <- paste0("(", paste(suffixes, collapse = "|"), ")$")
-  vars_ffq     <- grep(motif, names(ffq_data),     value = TRUE)
+  motif <- paste0("(", paste(suffixes, collapse = "|"), ")$")
+  
+  vars_ffq <- grep(motif, names(ffq_data), value = TRUE)
   vars_booklet <- grep(motif, names(booklet_data), value = TRUE)
   
-  if (length(vars_ffq) == 0)     stop("Aucune colonne FFQ ne se termine par ", paste(suffixes, collapse = ", "))
-  if (length(vars_booklet) == 0) stop("Aucune colonne Booklet ne se termine par ", paste(suffixes, collapse = ", "))
+  if (length(vars_ffq) == 0) {
+    stop("Aucune colonne FFQ ne se termine par ", paste(suffixes, collapse = ", "))
+  }
   
-  # --- 2) Préparer listes pour transformation (exclure explicitement SOMME_KCAL_Poids) ---
-  poids_ffq     <- setdiff(grep("_Poids$",  vars_ffq,     value = TRUE), "SOMME_KCAL_Poids")
-  poids_booklet <- setdiff(grep("_Poids$",  vars_booklet, value = TRUE), "SOMME_KCAL_Poids")
-  kcal_ffq      <- grep("_Kcal$",  vars_ffq,     value = TRUE)
-  kcal_booklet  <- grep("_Kcal$",  vars_booklet, value = TRUE)
+  if (length(vars_booklet) == 0) {
+    stop("Aucune colonne Booklet ne se termine par ", paste(suffixes, collapse = ", "))
+  }
   
-  # --- 3) Moyennes FFQ (long) avec ajustements d’unités (hors SOMME_KCAL_Poids) ---
-  moy_ffq <- ffq_data %>%
-    select(all_of(vars_ffq)) %>%
-    {
-      if (length(poids_ffq) > 0)     mutate(., across(all_of(poids_ffq), ~ .x * multiplier)) else .
-    } %>%
-    {
-      if (length(kcal_ffq) > 0)      mutate(., across(all_of(kcal_ffq),  ~ .x / 100))       else .
-    } %>%
-    summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
-    pivot_longer(everything(), names_to = "variable", values_to = "moyenne_FFQ")
+  # --- 2) Variables communes aux deux bases ---
+  vars_communes <- intersect(vars_ffq, vars_booklet)
   
-  # --- 4) Moyennes Booklet (long) avec ajustements d’unités (hors SOMME_KCAL_Poids) ---
-  moy_booklet <- booklet_data %>%
-    select(all_of(vars_booklet)) %>%
-    {
-      if (length(poids_booklet) > 0) mutate(., across(all_of(poids_booklet), ~ .x * multiplier)) else .
-    } %>%
-    {
-      if (length(kcal_booklet) > 0)  mutate(., across(all_of(kcal_booklet),  ~ .x / 100))       else .
-    } %>%
-    summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
-    pivot_longer(everything(), names_to = "variable", values_to = "moyenne_Booklet")
+  if (length(vars_communes) == 0) {
+    stop("Aucune variable commune entre ffq_data et booklet_data avec les suffixes indiqués.")
+  }
   
-  # --- 5) Base jointure pour stats ---
-  tableau_base <- left_join(moy_booklet, moy_ffq, by = "variable")
+  tableau_base <- tibble(variable = vars_communes)
   
-  # --- 6) Stats par variable ---
+  # --- 3) Statistiques par variable, sur paires complètes ---
   stats <- lapply(tableau_base$variable, function(var) {
+    
     x_full <- ffq_data[[var]]
     y_full <- booklet_data[[var]]
     
+    # Garder uniquement les individus avec FFQ ET Booklet non manquants
     valid <- !is.na(x_full) & !is.na(y_full)
-    x <- x_full[valid]; y <- y_full[valid]
     
-    if (length(x) <= 1) {
+    x <- x_full[valid] # FFQ
+    y <- y_full[valid] # Booklet
+    
+    n_pairs <- length(x)
+    
+    # Si pas assez d'observations
+    if (n_pairs <= 1) {
       return(data.frame(
-        variable = var, pct_bias = NA, p_value_diff = NA,
-        ci95_FFQ = NA, ci95_Booklet = NA,
-        pearson_correlation = NA, pearson_p_value = NA,
-        spearman_correlation = NA, spearman_p_value = NA,
-        pearson_pearson_correlation = NA, pearson_pearson_p_value = NA,
-        pct_similar_quintile = NA, pct_pearsonacent_quintile = NA, pct_opposite_quintile = NA
+        variable = var,
+        n_pairs = n_pairs,
+        moyenne_Booklet = NA,
+        ci95_Booklet = NA,
+        moyenne_FFQ = NA,
+        ci95_FFQ = NA,
+        pct_bias = NA,
+        p_value_diff = NA,
+        pearson_correlation = NA,
+        pearson_p_value = NA,
+        spearman_correlation = NA,
+        spearman_p_value = NA,
+        pct_similar_quintile = NA,
+        pct_adjacent_quintile = NA,
+        pct_opposite_quintile = NA
       ))
     }
     
-    # 6.1 Ajustements d’unités (sauf SOMME_KCAL_Poids)
-    if (grepl("_Poids$", var) && var != "SOMME_KCAL_Poids") { x <- x * multiplier; y <- y * multiplier }
-    if (grepl("_Kcal$",  var))                              { x <- x / 100;      y <- y / 100      }
-    
-    # 6.2 % bias
-    pct_bias <- (mean(x) - mean(y)) / mean(y) * 100
-    
-    # 6.3 Tests t et IC
-    t_diff <- t.test(x, y)
-    t_ffq  <- t.test(x, conf.level = conf_level)
-    t_book <- t.test(y, conf.level = conf_level)
-    
-    # 6.4 Corrélations brutes
-    if (sd(x) > 0 && sd(y) > 0) {
-      pearson_tst  <- cor.test(x, y, method = "pearson",  exact = FALSE)
-      spearman_tst <- cor.test(x, y, method = "spearman", exact = FALSE)
-      pearson_est  <- pearson_tst$estimate;  pearson_p  <- pearson_tst$p.value
-      spearman_est <- spearman_tst$estimate; spearman_p <- spearman_tst$p.value
-    } else {
-      pearson_est <- NA; pearson_p <- NA
-      spearman_est<- NA; spearman_p<- NA
+    # --- 3.1) Ajustement d'unité ---
+    # Conversion kg -> g pour les variables de poids,
+    # sauf SOMME_KCAL_Poids qui ne doit pas être multipliée par 1000.
+    if (grepl("_Poids$", var) && var != "SOMME_KCAL_Poids") {
+      x <- x * multiplier
+      y <- y * multiplier
     }
     
-    # 6.5 Corrélation ajustée sur énergie (energy = SOMME_KCAL_Poids non transformée)
-    if ("SOMME_KCAL_Poids" %in% names(ffq_data) && "SOMME_KCAL_Poids" %in% names(booklet_data)) {
-      energy_ffq <- ffq_data$SOMME_KCAL_Poids[valid]
-      energy_bk  <- booklet_data$SOMME_KCAL_Poids[valid]
-      # Choix: ajuster les deux sur la même énergie (booklet) pour neutraliser l’apport réel
-      lm_x <- lm(x ~ energy_bk)
-      lm_y <- lm(y ~ energy_bk)
-      resid_x <- residuals(lm_x); resid_y <- residuals(lm_y)
-      if (sd(resid_x) > 0 && sd(resid_y) > 0) {
-        pearson_tst <- cor.test(resid_x, resid_y, method = "pearson", exact = FALSE)
-        pearson_est <- pearson_tst$estimate; pearson_p <- pearson_tst$p.value
-      } else { pearson_est <- NA; pearson_p <- NA }
-    } else { pearson_est <- NA; pearson_p <- NA }
+    # --- 3.2) Moyennes sur les mêmes individus ---
+    moyenne_FFQ <- mean(x)
+    moyenne_Booklet <- mean(y)
     
-    # 6.6 Accord par quintiles
-    qx <- dplyr::ntile(x, 5); qy <- dplyr::ntile(y, 5)
-    delta <- qx - qy
-    d <- abs(delta)
-    pct_similar   <- mean(d == 0,        na.rm = TRUE) * 100
-    pct_pearsonacent  <- mean(d %in% c(1,2),        na.rm = TRUE) * 100
-    pct_opposite  <- mean(d %in% c(3,4), na.rm = TRUE) * 100  # sévères (3–4)
+    # --- 3.3) Pourcentage de biais : FFQ vs Booklet ---
+    pct_bias <- ifelse(
+      moyenne_Booklet == 0,
+      NA,
+      (moyenne_FFQ - moyenne_Booklet) / moyenne_Booklet * 100
+    )
     
+    # --- 3.4) Tests t et intervalles de confiance ---
+    # Test apparié : les deux mesures viennent des mêmes individus
+    t_diff <- t.test(x, y, paired = TRUE)
+    
+    # IC séparés des moyennes FFQ et Booklet
+    t_ffq <- t.test(x, conf.level = conf_level)
+    t_book <- t.test(y, conf.level = conf_level)
+    
+    # --- 3.5) Corrélations Pearson et Spearman ---
+    if (sd(x) > 0 && sd(y) > 0) {
+      
+      pearson_tst <- cor.test(x, y, method = "pearson", exact = FALSE)
+      spearman_tst <- cor.test(x, y, method = "spearman", exact = FALSE)
+      
+      pearson_est <- unname(pearson_tst$estimate)
+      pearson_p <- pearson_tst$p.value
+      
+      spearman_est <- unname(spearman_tst$estimate)
+      spearman_p <- spearman_tst$p.value
+      
+    } else {
+      
+      pearson_est <- NA
+      pearson_p <- NA
+      spearman_est <- NA
+      spearman_p <- NA
+    }
+    
+    # --- 3.6) Accord par quintiles ---
+    qx <- dplyr::ntile(x, 5)
+    qy <- dplyr::ntile(y, 5)
+    
+    d <- abs(qx - qy)
+    
+    pct_similar <- mean(d == 0, na.rm = TRUE) * 100
+    
+    # Ici, tu gardes ta définition large :
+    # écart de 1 ou 2 quintiles.
+    # Si tu veux "strictly adjacent", remplace c(1, 2) par 1.
+    pct_adjacent <- mean(d %in% c(1, 2), na.rm = TRUE) * 100
+    
+    pct_opposite <- mean(d %in% c(3, 4), na.rm = TRUE) * 100
+    
+    # --- 3.7) Résultat pour la variable ---
     data.frame(
       variable = var,
-      pct_bias = signif(pct_bias, 2),
+      n_pairs = n_pairs,
+      
+      moyenne_Booklet = moyenne_Booklet,
+      ci95_Booklet = sprintf("[%.2f, %.2f]",
+                             t_book$conf.int[1],
+                             t_book$conf.int[2]),
+      
+      moyenne_FFQ = moyenne_FFQ,
+      ci95_FFQ = sprintf("[%.2f, %.2f]",
+                         t_ffq$conf.int[1],
+                         t_ffq$conf.int[2]),
+      
+      pct_bias = pct_bias,
       p_value_diff = t_diff$p.value,
-      ci95_FFQ     = sprintf("[%.2f, %.2f]", t_ffq$conf.int[1],  t_ffq$conf.int[2]),
-      ci95_Booklet = sprintf("[%.2f, %.2f]", t_book$conf.int[1], t_book$conf.int[2]),
-      pearson_correlation  = pearson_est,
-      pearson_p_value      = pearson_p,
-      pearson_pearson_correlation = signif(pearson_est, 2),
-      pearson_pearson_p_value     = pearson_p,
+      
+      pearson_correlation = pearson_est,
+      pearson_p_value = pearson_p,
+      
       spearman_correlation = spearman_est,
-      spearman_p_value     = spearman_p,
-      pct_similar_quintile  = pct_similar,
-      pct_pearsonacent_quintile = pct_pearsonacent,
+      spearman_p_value = spearman_p,
+      
+      pct_similar_quintile = pct_similar,
+      pct_adjacent_quintile = pct_adjacent,
       pct_opposite_quintile = pct_opposite
     )
-  }) %>% bind_rows()
+  }) %>%
+    bind_rows()
   
-  # --- 7) Assemblage final ---
-  tableau_final <- tableau_base %>%
-    left_join(stats, by = "variable") %>%
+  # --- 4) Tableau final ---
+  tableau_final <- stats %>%
     select(
       variable,
+      n_pairs,
       moyenne_Booklet, ci95_Booklet,
-      moyenne_FFQ,     ci95_FFQ,
+      moyenne_FFQ, ci95_FFQ,
       pct_bias, p_value_diff,
-      pearson_correlation,  pearson_p_value,
-      pearson_pearson_correlation, pearson_pearson_p_value,
+      pearson_correlation, pearson_p_value,
       spearman_correlation, spearman_p_value,
-      pct_similar_quintile, pct_pearsonacent_quintile, pct_opposite_quintile
+      pct_similar_quintile,
+      pct_adjacent_quintile,
+      pct_opposite_quintile
     ) %>%
     mutate(across(where(is.numeric), ~ signif(.x, 2)))
   
   return(tableau_final)
 }
-
 
 
 
@@ -510,23 +567,15 @@ tableau_final_7 <- tableau_final_7 %>%
 
 
 
-tableau_final_8 <- analyser_moyennes(ffq_comm , booklet_comm )
-tableau_final_8 <- tableau_final_8 %>%
-  arrange(variable)
-
-
-
 # 1) Vecteur complet des variables dans l’ordre voulu
 variables <- c(
   "VIANDES_Poids",
   "CEREALES_PD_Poids", 
-  #"CHARCUTERIE_HORS_JB_Poids",
   "FEC_NON_RAF_Poids",
   "FEC_RAF_Poids",
   "FROMAGES_Poids",
   "FRUITS_Poids",
   "FRUITS_SECS_Poids", 
-  #"JAMBON_BLANC_Poids", 
   "LAITAGES_Poids",
   "LEGUMES_Poids",
   "LEG_SECS_Poids",
@@ -547,9 +596,7 @@ variables <- c(
   "FV_Poids",
   "FEC_Poids",
   "PDTS_LAITIERS_Poids",
-  "POULET_OEUFS_Poids", 
   "AUTRE_PDTS_ANIMAUX_Poids",
-  "VIANDE_ROUGE_PORC_Poids",
   "PDTS_DISCRETIONNAIRES_Poids",  
   "SSB_Poids" ,
   "PLATS_PREP_VEGETARIENS_Poids", 
@@ -560,6 +607,7 @@ variables <- c(
   "SAUCES_Poids",
   "DESSERTS_LACTES_Poids",
   "EAU_Poids",
+  "CAFE_THE_Poids",
   "SOMME_HORS_BOISSON_Poids",
   "SOMME_POIDS_Poids",
   "SOMME_KCAL_Poids"
@@ -587,7 +635,6 @@ tableau4_ord <- reorder_and_delta(tableau_final_4)
 tableau5_ord <- reorder_and_delta(tableau_final_5)
 tableau6_ord <- reorder_and_delta(tableau_final_6)
 tableau7_ord <- reorder_and_delta(tableau_final_7)
-tableau8_ord <- reorder_and_delta(tableau_final_8)
 
 
 
@@ -595,12 +642,12 @@ tableau8_ord <- reorder_and_delta(tableau_final_8)
 tableau1_ord <- tableau1_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      (pearson_pearson_correlation >= 0.4 |  spearman_correlation >= 0.4) & (pearson_pearson_correlation >= 0.6 |  spearman_correlation >= 0.6)  & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+     pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+     ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+     pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+     (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
@@ -613,121 +660,113 @@ tableau1_ord <- tableau1_ord %>%
 tableau2_ord <- tableau2_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+      pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+      pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
         "Missing"
     )
   )
+
 
 
 
 tableau3_ord <- tableau3_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+      pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+      pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
         "Missing"
     )
   )
+
+
+
+
 
 
 tableau4_ord <- tableau4_ord %>% 
   mutate(
-    classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
-      
-      # 3) Valeur manquante : l'une des stats est NA
-      is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
-        "Missing"
+      classe = case_when(
+        pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+        ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+        pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+        (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+        (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+        spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
+        
+        # 3) Valeur manquante : l'une des stats est NA
+        is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
+          "Missing"
+      )
     )
-  )
-
+    
 
 
 tableau5_ord <- tableau5_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+      pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+      pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
         "Missing"
-    )
-  )
+    ))
+  
+
+
 
 tableau6_ord <- tableau6_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+      pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+      pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
         "Missing"
-    )
-  )
-
+    ))
+    
 
 
 tableau7_ord <- tableau7_ord %>% 
   mutate(
     classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
+      pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" ,
+      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) | (spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05  ~ "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" ,
+      pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" ,
+      (spearman_correlation >= 0.4 |pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" ,
+      spearman_correlation < 0.4 & pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient at least 0.4.",
       
       # 3) Valeur manquante : l'une des stats est NA
       is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
         "Missing"
-    )
-  )
+    ))
 
-tableau8_ord <- tableau8_ord %>% 
-  mutate(
-    classe = case_when(
-      pearson_pearson_correlation >= 0.6 & spearman_correlation >= 0.6 & p_value_diff >= 0.05 ~ "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" ,
-      ((pearson_correlation >= 0.6 & spearman_correlation >= 0.4) |(spearman_correlation >= 0.6 & pearson_correlation >= 0.4)) & p_value_diff >= 0.05 ~ "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" ,
-      pearson_pearson_correlation >= 0.4 & spearman_correlation >= 0.4 & p_value_diff >= 0.05 ~ "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff >= 0.05 ~ "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" ,
-      (spearman_correlation >= 0.4 | pearson_pearson_correlation >= 0.4) &  p_value_diff < 0.05 ~ "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" ,
-      spearman_correlation < 0.4 &  pearson_pearson_correlation < 0.4  ~ "Weakly. No correlation coefficient ≥ 0.4.",
-      
-      # 3) Valeur manquante : l'une des stats est NA
-      is.na(spearman_p_value) | is.na(pearson_p_value) | is.na(p_value_diff) ~ 
-        "Missing"
-    )
-  )
+
+
 
 # 1) Ajout de la période et combinaison
 df1 <- tableau1_ord %>% mutate(periode = "Nov21_TI")
@@ -737,7 +776,7 @@ df4 <- tableau4_ord %>% mutate(periode = "March23_TI")
 df5 <- tableau5_ord %>% mutate(periode = "Nov23_TI")
 df6 <- tableau6_ord %>% mutate(periode = "March24_TI")
 df7 <- tableau7_ord %>% mutate(periode = "Nov22 (CSGA)")
-#df8 <- tableau8_ord %>% mutate(periode = "All")
+
 
 # —————————————————————————
 # Données
@@ -748,22 +787,22 @@ heat_df <- bind_rows(df1, df2, df3, df4, df5, df6, df7) %>%
 # —————————————————————————
 # Niveaux et palette
 levels_classe <- c(
-  "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different",
-  "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different",
-  "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different",
-  "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different",
-  "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different",
-  "Weakly. No correlation coefficient ≥ 0.4.",
+  "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different",
+  "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different",
+  "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different",
+  "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different",
+  "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different",
+  "Weakly. No correlation coefficient at least 0.4.",
   "Missing"   # <- libellé unique pour les manquants
 )
 
 palette_custom_named <- c(
-  "Weakly. No correlation coefficient ≥ 0.4." = "firebrick",
-  "Poorly. At least one of the two correlation coefficients is ≥ 0.4, but the means are statistically different" = "goldenrod",
-  "Moderatly. At least one of the two correlation coefficients is ≥ 0.4 and the means are not significantly different" = "#C7E9C0",
-  "Substantialy. The two correlation coefficients are ≥ 0.4 and the means are not significantly different" = "#A1D97B",
-  "Strongly. One of the two correlation coefficients is ≥ 0.6 and the other ≥ 0.4, and the averages are not significantly different" = "#74C499",
-  "Intensely. The two correlation coefficients are >= 0.6 and the averages are not significantly different" = "#31A354",
+  "Weakly. No correlation coefficient at least 0.4." = "firebrick",
+  "Poorly. At least one of the two correlation coefficients is at least 0.4, but the means are statistically different" = "goldenrod",
+  "Moderately. At least one of the two correlation coefficients is at least 0.4 and the means are not significantly different" = "#C7E9C0",
+  "Substantially. The two correlation coefficients are at least 0.4 and the means are not significantly different" = "#A1D97B",
+  "Strongly. One of the two correlation coefficients is at least 0.6 and the other at least 0.4, and the averages are not significantly different" = "#74C499",
+  "Intensely. The two correlation coefficients are at least 0.6 and the averages are not significantly different" = "#31A354",
   "Missing" = "grey"   # <- tuiles blanches pour les manquants
 )
 
@@ -785,6 +824,7 @@ labels_x <- setNames(
 # Labels variables (anglais)
 labels_EN <- c(
   CEREALES_PD_Poids = "Breakfast cereals",
+  CAFE_THE_Poids = "Coffee/tea",
   DESSERTS_LACTES_Poids = "Dairy Desserts",
   FEC_NON_RAF_Poids = "Unrefined Starches",
   FEC_RAF_Poids = "Refined Starches",
@@ -804,7 +844,7 @@ labels_EN <- c(
   POISSONS_Poids = "Fish",
   PORC_Poids = "Pork",
   POULET_Poids = "Chicken",
-  QUICHES_PIZZAS_TARTES_SALEES_Poids = "Quiches, Pizzas & Savoury Pies",
+  QUICHES_PIZZAS_TARTES_SALEES_Poids = "Quiches/ Pizzas/ Savoury Pies",
   SAUCES_Poids = "Sauces",
   SNACKS_AUTRES_Poids = "Other Snacks",
   VIANDE_ROUGE_Poids = "Red Meat",
@@ -815,12 +855,12 @@ labels_EN <- c(
   SODAS_LIGHT_Poids = "Diet Sodas",
   SODAS_SUCRES_Poids = "Sugary Sodas",
   FV_Poids  = "Fruits and vegetables",
-  FEC_Poids = "Starchy food",
+  FEC_Poids = "Starchy foods",
   PDTS_LAITIERS_Poids = "Dairy products",
   POULET_OEUFS_Poids = "Eggs / chicken",
   AUTRE_PDTS_ANIMAUX_Poids = "Cold cuts",
   VIANDE_ROUGE_PORC_Poids = "Red meat/Pork",
-  PDTS_DISCRETIONNAIRES_Poids = "Discretionnary food",
+  PDTS_DISCRETIONNAIRES_Poids = "Discretionary foods",
   SSB_Poids = "Sugary sweet beverages",
   SOMME_HORS_BOISSON_Poids = "Total weight without beverages",
   SOMME_POIDS_Poids = "Total weight",
@@ -835,10 +875,7 @@ df_all <- heat_df %>%
     # catégories pour les facettes
     category = case_when(
       variable %in% c("SOMME_HORS_BOISSON_Poids", "SOMME_POIDS_Poids", "SOMME_KCAL_Poids") ~ "General\nindicator",
-      variable %in% c(#"AUTRE_PDTS_ANIMAUX_Poids",
-                      "FV_Poids","FEC_Poids","PDTS_LAITIERS_Poids",
-                      #"POULET_OEUFS_Poids",
-                      #"VIANDE_ROUGE_PORC_Poids",
+      variable %in% c("FV_Poids","FEC_Poids","PDTS_LAITIERS_Poids",
                       "VIANDES_Poids",
                       "PDTS_DISCRETIONNAIRES_Poids","SSB_Poids") ~ "General\nfood item",
       TRUE ~ "Specific\nfood item"
@@ -902,24 +939,25 @@ p <- ggplot(df_all, aes(x = periode, y = variable, fill = classe)) +
     labels = function(x) str_wrap(x, width = 30)
   ) +
   labs(title = "Correlation of Weight Variables", x = NULL, y = NULL) +
-  theme_minimal(base_size = 10.5) +
+  theme_minimal(base_size = 14) +
   theme(
     plot.margin        = unit(c(1, 1, 1, 4), "lines"),
-    axis.text.y        = element_text(size = 9, angle = 0, hjust = 1),
+    axis.text.y        = element_text( angle = 0, hjust = 1, size=11),
     panel.spacing.y    = unit(1, "lines"),
     strip.placement    = "outside",
     strip.text.y.left  = element_blank(),
     strip.background.y = element_blank(),
     strip.background.x = element_blank(),
     strip.text.x       = element_text(face = "bold"),
-    axis.text.x        = element_text(angle = 45, hjust = 1, vjust = 1),
-    legend.text        = element_text(size = 8, lineheight = 0.9),
+    axis.text.x        = element_text(angle = 45, hjust = 1, vjust = 1, size=11),
+    legend.text        = element_text(size = 12, lineheight = 1),
     panel.grid         = element_blank(),
     plot.title         = element_text(color = "black", face = "bold", hjust = 0.5, size = 12)
   )
 
 print(p)
 
+###ANALYSE PAR QUINTILE ----------------------------------
 
 # 1) Regrouper les résultats de vos 7 campagnes
 all_stats <- bind_rows(
@@ -929,8 +967,7 @@ all_stats <- bind_rows(
   tableau_final_4 %>% mutate(periode = "March23_TI"),
   tableau_final_5 %>% mutate(periode = "Nov23_TI"),
   tableau_final_6 %>% mutate(periode = "March24_TI"),
-  tableau_final_7 %>% mutate(periode = "Nov22_CSGA")#,
- # tableau_final_8 %>% mutate(periode = "All")
+  tableau_final_7 %>% mutate(periode = "Nov22_CSGA")
 )
 lab_map <- c(
   Nov21_TI   = "Weekly\nFFQ 1",
@@ -949,7 +986,7 @@ lab_map <- c(
 plot_df_vars <- all_stats %>%
   select(variable, periode,
          pct_similar_quintile,
-         pct_pearsonacent_quintile,
+         pct_adjacent_quintile,
          pct_opposite_quintile) %>%
   pivot_longer(
     cols      = starts_with("pct_"),
@@ -960,11 +997,11 @@ plot_df_vars <- all_stats %>%
     classification = recode_factor(
       classification,
       pct_similar_quintile  = "Same quintile",
-      pct_pearsonacent_quintile = "pearsonacent quintiles",
+      pct_adjacent_quintile = "Adjacent quintiles",
       pct_opposite_quintile = "Opposite quintiles"
     ),
     classification = factor(classification,
-                            levels = c("Same quintile","pearsonacent quintiles","Opposite quintiles")),
+                            levels = c("Same quintile","Adjacent quintiles","Opposite quintiles")),
     periode = factor(periode,
                      levels = c("Nov21_TI","Nov22_TI",
                                 "Nov23_TI","Nov22_CSGA"))
@@ -973,6 +1010,7 @@ plot_df_vars <- all_stats %>%
 # 3) Mapping code → libellé anglais
 labels_EN <- c(
   VIANDES_Poids = "Meats",
+  CAFE_THE_Poids = "Coffee / Tea",
   CEREALES_PD_Poids                          = "Breakfast cereals",
   FEC_NON_RAF_Poids                          = "Unrefined starches",
   FEC_RAF_Poids                              = "Refined starches",
@@ -996,14 +1034,14 @@ labels_EN <- c(
   SODAS_SUCRES_Poids                         = "Sugary sodas",
   MGA_Poids                                  = "Animal fats",
   MGV_Poids                                  = "Vegetable fats",
-  FV_Poids                                   = "Fruits & vegetables",
+  FV_Poids                                   = "Fruits and vegetables",
   FEC_Poids                                  = "Starchy foods",
   PDTS_LAITIERS_Poids                        = "Dairy products",
-  POULET_OEUFS_Poids                         = "Eggs/Chicken",
-  AUTRE_PDTS_ANIMAUX_Poids                   = "Other animal products",
-  VIANDE_ROUGE_PORC_Poids                    = "Red meat & pork",
+  #POULET_OEUFS_Poids                         = "Eggs/Chicken",
+  AUTRE_PDTS_ANIMAUX_Poids                   = "Cold cuts",
+  #VIANDE_ROUGE_PORC_Poids                    = "Red meat & pork",
   PDTS_DISCRETIONNAIRES_Poids                = "Discretionary foods",
-  SSB_Poids                                  = "Sugary beverages",
+  SSB_Poids                                  = "Sugary sweet beverages",
   PLATS_PREP_VEGETARIENS_Poids               = "Vegetarian dishes",
   PLATS_PREP_CARNES_Poids                    = "Meat dishes",
   POISSONS_Poids                             = "Fish",
@@ -1020,9 +1058,8 @@ labels_EN <- c(
 # 0) Définir les groupes
 general_indicators <- c("SOMME_HORS_BOISSON_Poids","SOMME_POIDS_Poids","SOMME_KCAL_Poids")
 
-general_food_items <- c("FV_Poids","VIANDES_Poids","FEC_Poids","PDTS_LAITIERS_Poids",#"POULET_OEUFS_Poids",
-                        #"VIANDE_ROUGE_PORC_Poids",
-                        "PDTS_DISCRETIONNAIRES_Poids","SSB_Poids")
+general_food_items <- c("FV_Poids","FEC_Poids","PDTS_LAITIERS_Poids",
+                          "VIANDES_Poids","PDTS_DISCRETIONNAIRES_Poids","SSB_Poids")
 
 # tout le reste sera "Specific items"
 plot_quintile_by_campaign <- function(df,
@@ -1033,8 +1070,8 @@ plot_quintile_by_campaign <- function(df,
                                       label_min   = 3,
                                       label_dec   = 0) {
   general_indicators <- c("SOMME_HORS_BOISSON_Poids","SOMME_POIDS_Poids","SOMME_KCAL_Poids")
-  general_food_items <- c("FV_Poids","FEC_Poids","PDTS_LAITIERS_Poids","POULET_OEUFS_Poids",
-                          "VIANDE_ROUGE_PORC_Poids","PDTS_DISCRETIONNAIRES_Poids","SSB_Poids")
+  general_food_items <- c("FV_Poids","FEC_Poids","PDTS_LAITIERS_Poids",
+                          "VIANDES_Poids","PDTS_DISCRETIONNAIRES_Poids","SSB_Poids")
   
   df2 <- df
   if (!is.null(keep_vars))   df2 <- dplyr::filter(df2, variable %in% keep_vars)
@@ -1082,7 +1119,7 @@ plot_quintile_by_campaign <- function(df,
     scale_y_continuous(labels = scales::percent_format(scale = 1)) +
     scale_fill_manual(
       name   = "Classification",
-      values = c("Same quintile"="#31A354","pearsonacent quintiles"="#C7E9C0","Opposite quintiles"="yellow")
+      values = c("Same quintile"="#31A354","Adjacent quintiles"="#C7E9C0","Opposite quintiles"="yellow")
     ) +
     labs(x = NULL, y = "% Individuals", title = "Quintile classification agreement by campaign") +
     theme_minimal(base_size = 10) +
@@ -1111,13 +1148,14 @@ p_by_campaign <- plot_quintile_by_campaign(
     "SOMME_POIDS_Poids",
     "SOMME_KCAL_Poids",
      "FV_Poids",
+    "CAFE_THE_Poids",
     "FEC_Poids",
     "PDTS_LAITIERS_Poids",
-    "POULET_OEUFS_Poids",
+    #"POULET_OEUFS_Poids",
     "VIANDES_Poids",
-    #"AUTRE_PDTS_ANIMAUX_Poids",
+    "AUTRE_PDTS_ANIMAUX_Poids",
     #"VIANDE_ROUGE_PORC_Poids",
-    #"PDTS_DISCRETIONNAIRES_Poids",
+    "PDTS_DISCRETIONNAIRES_Poids",
     "SSB_Poids"  ,
     "CEREALES_PD_Poids",     
     "FEC_NON_RAF_Poids",      
@@ -1159,41 +1197,53 @@ print(p_by_campaign)
 
 
 
-
-# --- Packages -----------------------------------------------------------------
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(forcats)
-library(purrr)
-library(ggplot2)
-library(scales)
-
+# --- 1) Fonctions utilitaires -------------------------------------------------
 # --- 1) Fonctions utilitaires -------------------------------------------------
 
-# Découpe T1/T2/T3 à 20% / 60% / 20% en gérant les ties par jitter
-add_tertiles_id <- function(df, id_col = "Identifiant", seed = NULL) {
+# Découpe les individus en trois groupes selon leur position dans la distribution
+# des quantités observées dans les données de supply/booklet :
+# - T1 : 20% les plus faibles
+# - T2 : 60% intermédiaires
+# - T3 : 20% les plus élevés
+#
+# La découpe est réalisée séparément pour chaque variable *_Poids.
+# Les individus sont triés par quantité croissante ; en cas d'ex æquo,
+# l'identifiant est utilisé pour obtenir un tri déterministe.
+# La fonction crée, pour chaque variable, trois colonnes supplémentaires :
+# var_T1, var_T2 et var_T3, contenant l'identifiant si l'individu appartient
+# au groupe correspondant, et NA sinon.
+# Découpe T1/T2/T3 à 20% / 60% / 20% 
+
+add_tertiles_id <- function(df, id_col = "Identifiant") {
+  
   poids_vars <- grep("(?i)_Poids$", names(df), value = TRUE, perl = TRUE)
   
   for (var in poids_vars) {
+    
     num <- suppressWarnings(as.numeric(as.character(df[[var]])))
     
-    # Pré‐init colonnes T1/T2/T3 (stockent les Identifiants retenus)
+    # Pré-init colonnes T1/T2/T3
     df[[paste0(var, "_T1")]] <- NA_character_
     df[[paste0(var, "_T2")]] <- NA_character_
     df[[paste0(var, "_T3")]] <- NA_character_
     
-    if (!is.null(seed)) set.seed(seed)
-    
+    # Positions des individus avec une valeur non manquante
     valid <- which(!is.na(num))
+    
+    # Nombre d'observations valides
     n_tot <- length(valid)
+    
+    # Si aucune observation valide, on passe à la variable suivante
     if (n_tot == 0) next
     
+    # Découpe 20% / 60% / 20%
     n1 <- floor(0.2 * n_tot)
     n2 <- floor(0.8 * n_tot)
     
-    rj  <- runif(n_tot)                   # jitter pour casser les ties (ex: zéros)
-    ord <- valid[order(num[valid], rj)]   # indices ordonnés
+    # Tri déterministe :
+    # 1. par quantité croissante
+    # 2. par Identifiant en cas d'ex æquo
+    ord <- valid[order(num[valid], df[[id_col]][valid])]
     
     idx1 <- if (n1 > 0) ord[seq_len(n1)] else integer(0)
     idx2 <- if (n2 > n1) ord[(n1 + 1):n2] else integer(0)
@@ -1207,94 +1257,55 @@ add_tertiles_id <- function(df, id_col = "Identifiant", seed = NULL) {
   df
 }
 
-# Tableau comparatif FFQ vs Booklet (moyennes, t-test apparié & corrélations)
+# Tableau comparatif FFQ vs Booklet : uniquement les moyennes
 analyser_moyennes <- function(ffq_data, booklet_data,
-                              suffixes   = c("_Poids"),
-                              multiplier = 1000,
-                              conf_level = 0.95) {
+                              suffixes = c("_Poids"),
+                              multiplier = 1000) {
   
-  # 1) Colonnes d’intérêt
-  motif        <- paste0("(", paste(suffixes, collapse = "|"), ")$")
-  vars_ffq     <- grep(motif, names(ffq_data),    value = TRUE)
+  motif <- paste0("(", paste(suffixes, collapse = "|"), ")$")
+  
+  vars_ffq <- grep(motif, names(ffq_data), value = TRUE)
   vars_booklet <- grep(motif, names(booklet_data), value = TRUE)
-  if (!length(vars_ffq))     stop("Pas de colonnes FFQ en ", motif)
-  if (!length(vars_booklet)) stop("Pas de colonnes Booklet en ", motif)
+  vars_communes <- intersect(vars_ffq, vars_booklet)
   
-  # 2) Moyennes FFQ
-  moy_ffq <- ffq_data %>%
-    select(all_of(vars_ffq)) %>%
-    mutate(
-      across(ends_with("_Poids"), ~ suppressWarnings(as.numeric(.x)) * multiplier),
-      across(ends_with("_Kcal"),  ~ suppressWarnings(as.numeric(.x)) / 100)
-    ) %>%
-    summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
-    pivot_longer(everything(), names_to = "variable", values_to = "moyenne_FFQ")
+  if (!length(vars_communes)) {
+    stop("Aucune variable commune entre FFQ et Booklet.")
+  }
   
-  # 3) Moyennes Booklet
-  moy_booklet <- booklet_data %>%
-    select(all_of(vars_booklet)) %>%
-    mutate(
-      across(ends_with("_Poids"), ~ suppressWarnings(as.numeric(.x)) * multiplier),
-      across(ends_with("_Kcal"),  ~ suppressWarnings(as.numeric(.x)) / 100)
-    ) %>%
-    summarise(across(everything(), ~ mean(.x, na.rm = TRUE))) %>%
-    pivot_longer(everything(), names_to = "variable", values_to = "moyenne_Booklet")
-  
-  # Base commune
-  tableau_base <- left_join(moy_booklet, moy_ffq, by = "variable")
-  
-  # 4) Stats ligne à ligne
-  stats <- lapply(tableau_base$variable, function(var) {
-    x_raw <- suppressWarnings(as.numeric(ffq_data[[var]]))
-    y_raw <- suppressWarnings(as.numeric(booklet_data[[var]]))
-    idx   <- which(!is.na(x_raw) & !is.na(y_raw))
-    n_valid <- length(idx)
-    xv <- x_raw[idx]; yv <- y_raw[idx]
+  stats <- lapply(vars_communes, function(var) {
     
-    if (grepl("_Poids$", var)) { xv <- xv * multiplier; yv <- yv * multiplier }
-    if (grepl("_Kcal$",  var)) { xv <- xv / 100;       yv <- yv / 100       }
+    x <- suppressWarnings(as.numeric(ffq_data[[var]]))
+    y <- suppressWarnings(as.numeric(booklet_data[[var]]))
     
-    p_diff <- pearson_est <- pearson_p <- spearman_est <- spearman_p <- NA_real_
-    ciFFQ_str <- ciBook_str <- NA_character_
-    
-    if (n_valid >= 2) {
-      tt  <- tryCatch(t.test(xv, yv, paired = TRUE, conf.level = conf_level), error = function(e) NULL)
-      tt2 <- tryCatch(t.test(yv, conf.level = conf_level),                      error = function(e) NULL)
-      if (!is.null(tt))  { p_diff <- tt$p.value;  ciFFQ_str  <- sprintf("[%.2f, %.2f]", tt$conf.int[1], tt$conf.int[2]) }
-      if (!is.null(tt2)) { ciBook_str <- sprintf("[%.2f, %.2f]", tt2$conf.int[1], tt2$conf.int[2]) }
-      
-      pr <- tryCatch(cor.test(xv, yv, method = "pearson",  exact = FALSE), error = function(e) NULL)
-      sp <- tryCatch(cor.test(xv, yv, method = "spearman", exact = FALSE), error = function(e) NULL)
-      if (!is.null(pr)) { pearson_est <- pr$estimate; pearson_p <- pr$p.value }
-      if (!is.null(sp)) { spearman_est <- sp$estimate; spearman_p <- sp$p.value }
+    if (grepl("_Poids$", var) && var != "SOMME_KCAL_Poids") {
+      x <- x * multiplier
+      y <- y * multiplier
     }
     
+    valid <- !is.na(x) & !is.na(y)
+    
     data.frame(
-      variable             = var,
-      n_valid              = n_valid,
-      p_value_diff         = signif(p_diff,       2),
-      ci95_FFQ             = ciFFQ_str,
-      ci95_Booklet         = ciBook_str,
-      pearson_correlation  = signif(pearson_est,  2),
-      pearson_p_value      = signif(pearson_p,    2),
-      spearman_correlation = signif(spearman_est, 2),
-      spearman_p_value     = signif(spearman_p,   2),
-      stringsAsFactors     = FALSE
+      variable = var,
+      n_pairs = sum(valid),
+      moyenne_Booklet = mean(y[valid], na.rm = TRUE),
+      moyenne_FFQ = mean(x[valid], na.rm = TRUE)
     )
-  }) %>% bind_rows()
+  }) %>%
+    bind_rows() %>%
+    mutate(
+      Delta = moyenne_FFQ - moyenne_Booklet,
+      pct_bias = ifelse(
+        moyenne_Booklet == 0,
+        NA_real_,
+        Delta / moyenne_Booklet * 100
+      ),
+      across(where(is.numeric), ~ signif(.x, 3))
+    )
   
-  # 5) Assemblage
-  tableau_base %>%
-    left_join(stats, by = "variable") %>%
-    select(
-      variable, n_valid,
-      moyenne_Booklet, ci95_Booklet,
-      moyenne_FFQ,     ci95_FFQ,
-      p_value_diff,
-      pearson_correlation, pearson_p_value,
-      spearman_correlation, spearman_p_value
-    )
+  return(stats)
 }
+
+
 
 # --- 2) Préparation des tertiles Booklet + masques FFQ ------------------------
 
@@ -1407,19 +1418,17 @@ tableau_final <- bind_rows(tbl_list, .id = "source") %>%
   filter(!str_ends(variable, "_Kcal"), variable != "SOMME_KCALTOT")
 
 # 3.4 Ajout période par base
-tableau_final <- tableau_final %>%
-  mutate(
-    periode = case_when(
-      base == "IT11"    ~ "Nov22_TI",
-      base == "IT12"    ~ "March23_TI",
-      base == "IT21"    ~ "Nov23_TI",
-      base == "IT22"    ~ "March24_TI",
-      base == "nudges1" ~ "Nov21_TI",
-      base == "nudges2" ~ "March22_TI",
-      base == "CSGA"    ~ "Nov22 (CSGA)",
-      TRUE              ~ NA_character_
-    )
-  )
+tableau_final <- bind_rows(tbl_list, .id = "source") %>%
+  mutate(source = str_remove(source, "^tableau_final_")) %>%
+  tidyr::separate(
+    col = source,
+    into = c("base", "tertile"),
+    sep = "_(?=T)",
+    extra = "merge"
+  ) %>%
+  filter(grepl("_ord$", tertile)) %>%
+  filter(!str_ends(variable, "_Kcal"), variable != "SOMME_KCALTOT")
+
 
 # --- 4) Sélection des cibles & préparation du DF pour le plot -----------------
 
@@ -1430,11 +1439,8 @@ df_plot_all <- tableau_final %>%
   filter(variable %in% cibles,
          !is.na(moyenne_Booklet), !is.na(moyenne_FFQ), !is.na(tertile)) %>%
   mutate(
-    # Préfixe pour la Wave
-    TertileTypeRaw = str_replace(tertile, "_T[123]_ord$|_Tall_ord$", ""),
-    # Label Wave
     TertileLabel = fct_recode(
-      TertileTypeRaw,
+      base,
       "Weekly FFQ\u00A01 (Nov\u00A021)"   = "nudges1",
       "Weekly FFQ\u00A01 (March\u00A022)" = "nudges2",
       "Weekly FFQ\u00A02 (Nov\u00A022)"   = "IT11",
@@ -1454,14 +1460,16 @@ df_plot_all <- tableau_final %>%
     ) %>% fct_relevel("Fruits & Vegetables","Starchy Foods","Dairy Products",
                       "Sugary Sweet Beverages","Discretionary Foods","Meats"),
     Campaign = case_when(
-      str_detect(tertile, "_T1_ord$")   ~ "≤ 20 %",
-      str_detect(tertile, "_T2_ord$")   ~ "20 %-80 %",
-      str_detect(tertile, "_T3_ord$")   ~ "> 80 %",
-      str_detect(tertile, "_Tall_ord$") ~ "All"
-    ) %>% factor(levels = c("All", "≤ 20 %", "20 %-80 %", "> 80 %")),
+      str_detect(tertile, "^T1_ord$")   ~ "Bottom 20% (Supply data distribution)",
+      str_detect(tertile, "^T2_ord$")   ~ "Middle 60% (Supply data distribution)",
+      str_detect(tertile, "^T3_ord$")   ~ "Top 20% (Supply data distribution)",
+      str_detect(tertile, "^Tall_ord$") ~ "All (Supply data distribution)"
+    ) %>% factor(levels = c("All (Supply data distribution)",
+                            "Top 20% (Supply data distribution)",
+                            "Middle 60% (Supply data distribution)", 
+                            "Bottom 20% (Supply data distribution)")),
     diff = moyenne_FFQ - moyenne_Booklet
   )
-
 # >>> Ordre désiré des vagues (FFQ1 -> FFQ3 -> Monthly) <<<
 wave_levels <- c(
   "Weekly FFQ\u00A01 (Nov\u00A021)",
@@ -1480,7 +1488,9 @@ off <- 0.25
 
 df_v <- df_plot_all %>%
   mutate(
-    Bin     = fct_relevel(Campaign, "All", "≤ 20 %", "20 %-80 %", "> 80 %"),
+    Bin     = fct_relevel(Campaign, "All (Supply data distribution)","Top 20% (Supply data distribution)", 
+                          "Middle 60% (Supply data distribution)", 
+                          "Bottom 20% (Supply data distribution)"),
     Wave    = factor(TertileLabel, levels = wave_levels),  # <-- ordre imposé ici
     var_fac = factor(variable_en),
     var_ord = as.numeric(var_fac),
@@ -1509,7 +1519,7 @@ ggplot(df_v, aes(color = Wave, group = Wave)) +
     linewidth = 0.9, lineend = "round", alpha = 0.9,
     arrow = arrow(ends = "last", type = "closed", angle = 14, length = unit(2.4, "mm"))
   ) +
-  facet_wrap(~ Bin, ncol = 1, scales = "fixed", strip.position = "left") +
+  facet_wrap(~ Bin, ncol = 1, scales = "fixed", strip.position = "top") +
   scale_color_manual(values = pal, breaks = wave_levels, name = "Wave") +  # <-- breaks = ordre
   scale_x_continuous(breaks = x_breaks, labels = x_labels_spaced,
                      expand = expansion(mult = c(0.04, 0.10))) +
@@ -1519,15 +1529,15 @@ ggplot(df_v, aes(color = Wave, group = Wave)) +
     breaks = scales::breaks_pretty(n = 3),
     expand = expansion(mult = c(0.03, 0.08))
   ) +
-  labs(title = "FFQ vs Booklet by Food Category", x = NULL) +
+  labs(title = "Comparison of FFQ and Supply Data Across Aggregated Food Categories", x = NULL) +
   theme_minimal(base_size = 13) +
   theme(
     plot.title         = element_text(hjust = 0.5, face = "bold", margin = margin(b = 6)),
     legend.position    = "bottom",
     legend.title       = element_text(face = "bold"),
     axis.title.x       = element_blank(),
-    axis.text.x        = element_text(size = 8.5, angle = 45, hjust = 1, vjust = 1, colour = "grey35"),
-    axis.text.y        = element_text(size = 8.5, colour = "grey35"),
+    axis.text.x        = element_text(size = 12, angle = 45, hjust = 1, vjust = 1, colour = "grey35"),
+    axis.text.y        = element_text(size = 12, colour = "grey35"),
     axis.ticks.length  = unit(2, "pt"),
     axis.ticks         = element_line(linewidth = 0.2, colour = "grey70"),
     strip.text.y.left  = element_text(face = "bold"),
@@ -1540,10 +1550,9 @@ ggplot(df_v, aes(color = Wave, group = Wave)) +
 
 
 
-
- ##GRAPH de différence par mesure--------------------------------------
-sgsdata_complet <-read.xlsx((paste("Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata_IT.xlsx", sep="")))
-sgsdata_nudges_complet  <- read.xlsx((paste("Données analysées - Article N°4- Nudge/Fichiers_nettoyés/Fichier_traité/sgsdata_nudges.xlsx", sep="")))
+##GRAPH de différence par mesure--------------------------------------
+sgsdata_complet <-read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers traités/sgsdata_IT.xlsx", sep="")))
+sgsdata_nudges_complet  <- read.xlsx((paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_4/Fichiers_nettoyés/Fichier_traité/sgsdata_nudges.xlsx", sep="")))
 sgsdata_complet <- sgsdata_complet %>%mutate(Campagne = if_else(str_detect(Identifiant, "PS|LE"),2,1))
 sgsdata_complet<- sgsdata_complet %>% arrange(Identifiant) %>%group_by(Identifiant) %>% fill(UC_TI, .direction = "downup") %>%ungroup()
 sgsdata_nudges_complet<- sgsdata_nudges_complet %>%  arrange(Identifiant) %>%group_by(Identifiant) %>% fill(UC_TI, .direction = "downup") %>%ungroup()
@@ -1551,11 +1560,20 @@ fill_zero <- function(df) { df %>%mutate(across(everything(),~ ifelse(is.na(.) |
 sgsdata_complet            <- fill_zero(sgsdata_complet)
 sgsdata_nudges_complet      <- fill_zero(sgsdata_nudges_complet)
 
-
+unique (sgsdata_complet$Montant.mensuel.total)
+sgsdata_complet <- sgsdata_complet %>%
+  mutate(
+    groupe = case_when(
+      Montant.mensuel.total == "Ok" ~ 1,
+      Montant.mensuel.total == "0" ~ 0,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  filter(groupe == 0)
 
 ### SGSDATA Complet carnet -----------------------http://127.0.0.1:27837/graphics/8d000470-044b-44ee-9a45-a9d4d9f89e41.png
 sgsdata_Booklet_IT <- sgsdata_complet %>%
-  select(Identifiant, UC_TI ,Mesure,Campagne, Periode, groupe, ends_with("_CARNET_POIDS"), SOMME_CARNET_HORS_BOISSON, SOMME_FFQ_HORS_BOISSON)
+  select(Identifiant, UC_TI ,Mesure,Campagne, Periode, groupe, ends_with("_CARNET_POIDS"))
 #Verif groupe
 sgsdata_Booklet_IT$FV_CARNET_Poids <- sgsdata_Booklet_IT$FRUITS_CARNET_Poids + sgsdata_Booklet_IT$FRUITS_SECS_CARNET_Poids  + sgsdata_Booklet_IT$NOIX_CARNET_Poids + sgsdata_Booklet_IT$LEGUMES_CARNET_Poids 
 sgsdata_Booklet_IT$FEC_CARNET_Poids <- sgsdata_Booklet_IT$FEC_NON_RAF_CARNET_Poids + sgsdata_Booklet_IT$FEC_RAF_CARNET_Poids
@@ -1580,7 +1598,7 @@ sgsdata_Booklet_IT <- sgsdata_Booklet_IT %>%
 
 ###SGSDATA COMPLET FFQ -----------------------------------
 sgsdata_complet_FFQ <- sgsdata_complet%>%
-  select(Identifiant, UC_TI ,Mesure,Campagne, Periode, groupe, ends_with("_FFQ_Poids"), SOMME_FFQ_HORS_BOISSON)
+  select(Identifiant, UC_TI ,Mesure,Campagne, Periode, groupe, ends_with("_FFQ_Poids"))
 sgsdata_complet_FFQ$FV_FFQ_Poids <- sgsdata_complet_FFQ$FRUITS_FFQ_Poids + sgsdata_complet_FFQ$FRUITS_SECS_FFQ_Poids  + sgsdata_complet_FFQ$NOIX_FFQ_Poids + sgsdata_complet_FFQ$LEGUMES_FFQ_Poids 
 sgsdata_complet_FFQ$FEC_FFQ_Poids <- sgsdata_complet_FFQ$FEC_NON_RAF_FFQ_Poids + sgsdata_complet_FFQ$FEC_RAF_FFQ_Poids
 sgsdata_complet_FFQ$PDTS_LAITIERS_FFQ_Poids <- sgsdata_complet_FFQ$LAIT_FFQ_Poids + sgsdata_complet_FFQ$LAITAGES_FFQ_Poids + sgsdata_complet_FFQ$FROMAGES_FFQ_Poids
@@ -1608,78 +1626,78 @@ sgsdata_complet_FFQ <- sgsdata_complet_FFQ %>%
     if_any(ends_with("_Poids"), ~ . != 0))
 
 ### SGSDATA NUDGES CARNET -------------------------------
-sgsdata_nudges_Carnet <- sgsdata_nudges_complet %>%
-  select(Identifiant,UC_TI , Mesure,Periode, groupe, ends_with("_Poids"), SOMME_CARNET_POIDS, SOMME_CARNET_HORS_BOISSON.x ) %>%
-  rename_with(
-    ~ str_replace(.x, "_Poids$", "_CARNET_Poids"))#,
-  #  ends_with("_CARNET")) %>%
-  ## on ne garde que les lignes où au moins une colonne _Poids est non-zéro
-  #filter(
-  #  if_any(ends_with("_Poids"), ~ . != 0))
-    
-sgsdata_nudges_Carnet$FV_CARNET_Poids <- sgsdata_nudges_Carnet$FRUITS_CARNET_Poids + sgsdata_nudges_Carnet$FRUITS_SECS_CARNET_Poids  + sgsdata_nudges_Carnet$NOIX_CARNET_Poids + sgsdata_nudges_Carnet$LEGUMES_CARNET_Poids 
-sgsdata_nudges_Carnet$FEC_CARNET_Poids <- sgsdata_nudges_Carnet$FEC_NON_RAF_CARNET_Poids + sgsdata_nudges_Carnet$FEC_RAF_CARNET_Poids
-sgsdata_nudges_Carnet$PDTS_LAITIERS_CARNET_Poids <- sgsdata_nudges_Carnet$LAIT_CARNET_Poids + sgsdata_nudges_Carnet$LAITAGES_CARNET_Poids + sgsdata_nudges_Carnet$FROMAGES_CARNET_Poids
-sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids <- sgsdata_nudges_Carnet$POULET_CARNET_Poids + sgsdata_nudges_Carnet$OEUFS_CARNET_Poids
-sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids <- sgsdata_nudges_Carnet$CHARCUTERIE_HORS_JB_CARNET_Poids  + sgsdata_nudges_Carnet$JAMBON_BLANC_CARNET_Poids 
-sgsdata_nudges_Carnet$VIANDE_ROUGE_PORC_CARNET_Poids <- sgsdata_nudges_Carnet$VIANDE_ROUGE_CARNET_Poids+ sgsdata_nudges_Carnet$PORC_CARNET_Poids
-sgsdata_nudges_Carnet$PDTS_DISCRETIONNAIRES_CARNET_Poids <- sgsdata_nudges_Carnet$SNACKS_AUTRES_CARNET_Poids +  sgsdata_nudges_Carnet$CEREALES_PD_CARNET_Poids  + sgsdata_nudges_Carnet$PDTS_SUCRES_CARNET_Poids 
-sgsdata_nudges_Carnet$SSB_CARNET_Poids <-  sgsdata_nudges_Carnet$SODAS_SUCRES_CARNET_Poids + sgsdata_nudges_Carnet$SODAS_LIGHT_CARNET_Poids +sgsdata_nudges_Carnet$FRUITS_JUS_CARNET_Poids 
-
-sgsdata_nudges_Carnet$SOMME_HB_CARNET_Poids <-sgsdata_nudges_Carnet$FV_CARNET_Poids + sgsdata_nudges_Carnet$FEC_CARNET_Poids +
-  sgsdata_nudges_Carnet$PDTS_LAITIERS_CARNET_Poids + sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids +sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids +
-  sgsdata_nudges_Carnet$PDTS_DISCRETIONNAIRES_CARNET_Poids + sgsdata_nudges_Carnet$DESSERTS_LACTES_CARNET_Poids +
-  sgsdata_nudges_Carnet$QUICHES_PIZZAS_TARTES_SALEES_CARNET_Poids + sgsdata_nudges_Carnet$MGA_CARNET_Poids + sgsdata_nudges_Carnet$MGV_CARNET_Poids +
-  sgsdata_nudges_Carnet$POISSONS_CARNET_Poids + sgsdata_nudges_Carnet$LEG_SECS_CARNET_Poids + sgsdata_nudges_Carnet$PLATS_PREP_CARNES_CARNET_Poids + sgsdata_nudges_Carnet$PLATS_PREP_VEGETARIENS_CARNET_Poids + sgsdata_nudges_Carnet$SAUCES_CARNET_Poids
-
-sgsdata_nudges_Carnet$VIANDES_CARNET_Poids  <- sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids + sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids + sgsdata_nudges_Carnet$VIANDE_ROUGE_PORC_CARNET_Poids 
-
-
-sgsdata_nudges_Carnet <- sgsdata_nudges_Carnet %>%
-  rename_with(
-    ~ str_remove_all(.x, "_CARNET"),
-    .cols = everything()
-  ) %>%
-  # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
-  filter(
-    if_any(ends_with("_Poids"), ~ . != 0))
-
-### SGSDATA NUDGES FFQ -------------------------------
-sgsdata_nudges_FFQ <- sgsdata_nudges_complet  %>%
-  select(Identifiant, UC_TI ,Mesure, Periode, groupe, ends_with("_Poids"), SOMME_FFQ_HORS_BOISSON )%>%
-  rename_with(
-    ~ str_replace(.x, "_Poids$", "_FFQ_Poids"))
-
-
-
-sgsdata_nudges_FFQ$FV_FFQ_Poids <- sgsdata_nudges_FFQ$FRUITS_FFQ_Poids + sgsdata_nudges_FFQ$FRUITS_SECS_FFQ_Poids  + sgsdata_nudges_FFQ$NOIX_FFQ_Poids + sgsdata_nudges_FFQ$LEGUMES_FFQ_Poids 
-sgsdata_nudges_FFQ$FEC_FFQ_Poids <- sgsdata_nudges_FFQ$FEC_NON_RAF_FFQ_Poids + sgsdata_nudges_FFQ$FEC_RAF_FFQ_Poids
-sgsdata_nudges_FFQ$PDTS_LAITIERS_FFQ_Poids <- sgsdata_nudges_FFQ$LAIT_FFQ_Poids + sgsdata_nudges_FFQ$LAITAGES_FFQ_Poids + sgsdata_nudges_FFQ$FROMAGES_FFQ_Poids
-sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids <- sgsdata_nudges_FFQ$POULET_FFQ_Poids + sgsdata_nudges_FFQ$OEUFS_FFQ_Poids
-sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids <- sgsdata_nudges_FFQ$CHARCUTERIE_HORS_JB_FFQ_Poids  + sgsdata_nudges_FFQ$JAMBON_BLANC_FFQ_Poids 
-sgsdata_nudges_FFQ$VIANDE_ROUGE_PORC_FFQ_Poids <- sgsdata_nudges_FFQ$VIANDE_ROUGE_FFQ_Poids+ sgsdata_nudges_FFQ$PORC_FFQ_Poids
-sgsdata_nudges_FFQ$PDTS_DISCRETIONNAIRES_FFQ_Poids <- sgsdata_nudges_FFQ$SNACKS_AUTRES_FFQ_Poids +  sgsdata_nudges_FFQ$CEREALES_PD_FFQ_Poids  + sgsdata_nudges_FFQ$PDTS_SUCRES_FFQ_Poids 
-sgsdata_nudges_FFQ$SSB_FFQ_Poids <-  sgsdata_nudges_FFQ$SODAS_SUCRES_FFQ_Poids + sgsdata_nudges_FFQ$SODAS_LIGHT_FFQ_Poids +sgsdata_nudges_FFQ$FRUITS_JUS_FFQ_Poids 
-
-sgsdata_nudges_FFQ$SOMME_HB_FFQ_Poids <-sgsdata_nudges_FFQ$FV_FFQ_Poids + sgsdata_nudges_FFQ$FEC_FFQ_Poids +
-  sgsdata_nudges_FFQ$PDTS_LAITIERS_FFQ_Poids + sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids +sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids +
-  sgsdata_nudges_FFQ$PDTS_DISCRETIONNAIRES_FFQ_Poids + sgsdata_nudges_FFQ$DESSERTS_LACTES_FFQ_Poids +
-  sgsdata_nudges_FFQ$QUICHES_PIZZAS_TARTES_SALEES_FFQ_Poids + sgsdata_nudges_FFQ$MGA_FFQ_Poids + sgsdata_nudges_FFQ$MGV_FFQ_Poids +
-  sgsdata_nudges_FFQ$POISSONS_FFQ_Poids + sgsdata_nudges_FFQ$LEG_SECS_FFQ_Poids + sgsdata_nudges_FFQ$PLATS_PREP_CARNES_FFQ_Poids + sgsdata_nudges_FFQ$PLATS_PREP_VEGETARIENS_FFQ_Poids + sgsdata_nudges_FFQ$SAUCES_FFQ_Poids
-
-sgsdata_nudges_FFQ$VIANDES_FFQ_Poids <- sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids  + sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids  + sgsdata_nudges_FFQ$VIANDE_ROUGE_PORC_FFQ_Poids
-
-
-
-sgsdata_nudges_FFQ <- sgsdata_nudges_FFQ %>%
-  rename_with(
-    ~ str_remove_all(.x, "_FFQ"),
-    .cols = everything()
-  ) %>%
-  # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
-  filter(
-    if_any(ends_with("_Poids"), ~ . != 0))
-
+#sgsdata_nudges_Carnet <- sgsdata_nudges_complet %>%
+#  select(Identifiant,UC_TI , Mesure,Periode, groupe, ends_with("_Poids")) %>%
+#  rename_with(
+#    ~ str_replace(.x, "_Poids$", "_CARNET_Poids"))#,
+#  #  ends_with("_CARNET")) %>%
+#  ## on ne garde que les lignes où au moins une colonne _Poids est non-zéro
+#  #filter(
+#  #  if_any(ends_with("_Poids"), ~ . != 0))
+#    
+#sgsdata_nudges_Carnet$FV_CARNET_Poids <- sgsdata_nudges_Carnet$FRUITS_CARNET_Poids + sgsdata_nudges_Carnet$FRUITS_SECS_CARNET_Poids  + sgsdata_nudges_Carnet$NOIX_CARNET_Poids + sgsdata_nudges_Carnet$LEGUMES_CARNET_Poids 
+#sgsdata_nudges_Carnet$FEC_CARNET_Poids <- sgsdata_nudges_Carnet$FEC_NON_RAF_CARNET_Poids + sgsdata_nudges_Carnet$FEC_RAF_CARNET_Poids
+#sgsdata_nudges_Carnet$PDTS_LAITIERS_CARNET_Poids <- sgsdata_nudges_Carnet$LAIT_CARNET_Poids + sgsdata_nudges_Carnet$LAITAGES_CARNET_Poids + sgsdata_nudges_Carnet$FROMAGES_CARNET_Poids
+#sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids <- sgsdata_nudges_Carnet$POULET_CARNET_Poids + sgsdata_nudges_Carnet$OEUFS_CARNET_Poids
+#sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids <- sgsdata_nudges_Carnet$CHARCUTERIE_HORS_JB_CARNET_Poids  + sgsdata_nudges_Carnet$JAMBON_BLANC_CARNET_Poids 
+#sgsdata_nudges_Carnet$VIANDE_ROUGE_PORC_CARNET_Poids <- sgsdata_nudges_Carnet$VIANDE_ROUGE_CARNET_Poids+ sgsdata_nudges_Carnet$PORC_CARNET_Poids
+#sgsdata_nudges_Carnet$PDTS_DISCRETIONNAIRES_CARNET_Poids <- sgsdata_nudges_Carnet$SNACKS_AUTRES_CARNET_Poids +  sgsdata_nudges_Carnet$CEREALES_PD_CARNET_Poids  + sgsdata_nudges_Carnet$PDTS_SUCRES_CARNET_Poids 
+#sgsdata_nudges_Carnet$SSB_CARNET_Poids <-  sgsdata_nudges_Carnet$SODAS_SUCRES_CARNET_Poids + sgsdata_nudges_Carnet$SODAS_LIGHT_CARNET_Poids +sgsdata_nudges_Carnet$FRUITS_JUS_CARNET_Poids 
+#
+#sgsdata_nudges_Carnet$SOMME_HB_CARNET_Poids <-sgsdata_nudges_Carnet$FV_CARNET_Poids + sgsdata_nudges_Carnet$FEC_CARNET_Poids +
+#  sgsdata_nudges_Carnet$PDTS_LAITIERS_CARNET_Poids + sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids +sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids +
+#  sgsdata_nudges_Carnet$PDTS_DISCRETIONNAIRES_CARNET_Poids + sgsdata_nudges_Carnet$DESSERTS_LACTES_CARNET_Poids +
+#  sgsdata_nudges_Carnet$QUICHES_PIZZAS_TARTES_SALEES_CARNET_Poids + sgsdata_nudges_Carnet$MGA_CARNET_Poids + sgsdata_nudges_Carnet$MGV_CARNET_Poids +
+#  sgsdata_nudges_Carnet$POISSONS_CARNET_Poids + sgsdata_nudges_Carnet$LEG_SECS_CARNET_Poids + sgsdata_nudges_Carnet$PLATS_PREP_CARNES_CARNET_Poids + sgsdata_nudges_Carnet$PLATS_PREP_VEGETARIENS_CARNET_Poids + sgsdata_nudges_Carnet$SAUCES_CARNET_Poids
+#
+#sgsdata_nudges_Carnet$VIANDES_CARNET_Poids  <- sgsdata_nudges_Carnet$AUTRE_PDTS_ANIMAUX_CARNET_Poids + sgsdata_nudges_Carnet$POULET_OEUFS_CARNET_Poids + sgsdata_nudges_Carnet$VIANDE_ROUGE_PORC_CARNET_Poids 
+#
+#
+#sgsdata_nudges_Carnet <- sgsdata_nudges_Carnet %>%
+#  rename_with(
+#    ~ str_remove_all(.x, "_CARNET"),
+#    .cols = everything()
+#  ) %>%
+#  # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
+#  filter(
+#    if_any(ends_with("_Poids"), ~ . != 0))
+#
+#### SGSDATA NUDGES FFQ -------------------------------
+#sgsdata_nudges_FFQ <- sgsdata_nudges_complet  %>%
+#  select(Identifiant, UC_TI ,Mesure, Periode, groupe, ends_with("_Poids") )%>%
+#  rename_with(
+#    ~ str_replace(.x, "_Poids$", "_FFQ_Poids"))
+#
+#
+#
+#sgsdata_nudges_FFQ$FV_FFQ_Poids <- sgsdata_nudges_FFQ$FRUITS_FFQ_Poids + sgsdata_nudges_FFQ$FRUITS_SECS_FFQ_Poids  + sgsdata_nudges_FFQ$NOIX_FFQ_Poids + sgsdata_nudges_FFQ$LEGUMES_FFQ_Poids 
+#sgsdata_nudges_FFQ$FEC_FFQ_Poids <- sgsdata_nudges_FFQ$FEC_NON_RAF_FFQ_Poids + sgsdata_nudges_FFQ$FEC_RAF_FFQ_Poids
+#sgsdata_nudges_FFQ$PDTS_LAITIERS_FFQ_Poids <- sgsdata_nudges_FFQ$LAIT_FFQ_Poids + sgsdata_nudges_FFQ$LAITAGES_FFQ_Poids + sgsdata_nudges_FFQ$FROMAGES_FFQ_Poids
+#sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids <- sgsdata_nudges_FFQ$POULET_FFQ_Poids + sgsdata_nudges_FFQ$OEUFS_FFQ_Poids
+#sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids <- sgsdata_nudges_FFQ$CHARCUTERIE_HORS_JB_FFQ_Poids  + sgsdata_nudges_FFQ$JAMBON_BLANC_FFQ_Poids 
+#sgsdata_nudges_FFQ$VIANDE_ROUGE_PORC_FFQ_Poids <- sgsdata_nudges_FFQ$VIANDE_ROUGE_FFQ_Poids+ sgsdata_nudges_FFQ$PORC_FFQ_Poids
+#sgsdata_nudges_FFQ$PDTS_DISCRETIONNAIRES_FFQ_Poids <- sgsdata_nudges_FFQ$SNACKS_AUTRES_FFQ_Poids +  sgsdata_nudges_FFQ$CEREALES_PD_FFQ_Poids  + sgsdata_nudges_FFQ$PDTS_SUCRES_FFQ_Poids 
+#sgsdata_nudges_FFQ$SSB_FFQ_Poids <-  sgsdata_nudges_FFQ$SODAS_SUCRES_FFQ_Poids + sgsdata_nudges_FFQ$SODAS_LIGHT_FFQ_Poids +sgsdata_nudges_FFQ$FRUITS_JUS_FFQ_Poids 
+#
+#sgsdata_nudges_FFQ$SOMME_HB_FFQ_Poids <-sgsdata_nudges_FFQ$FV_FFQ_Poids + sgsdata_nudges_FFQ$FEC_FFQ_Poids +
+#  sgsdata_nudges_FFQ$PDTS_LAITIERS_FFQ_Poids + sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids +sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids +
+#  sgsdata_nudges_FFQ$PDTS_DISCRETIONNAIRES_FFQ_Poids + sgsdata_nudges_FFQ$DESSERTS_LACTES_FFQ_Poids +
+#  sgsdata_nudges_FFQ$QUICHES_PIZZAS_TARTES_SALEES_FFQ_Poids + sgsdata_nudges_FFQ$MGA_FFQ_Poids + sgsdata_nudges_FFQ$MGV_FFQ_Poids +
+#  sgsdata_nudges_FFQ$POISSONS_FFQ_Poids + sgsdata_nudges_FFQ$LEG_SECS_FFQ_Poids + sgsdata_nudges_FFQ$PLATS_PREP_CARNES_FFQ_Poids + sgsdata_nudges_FFQ$PLATS_PREP_VEGETARIENS_FFQ_Poids + sgsdata_nudges_FFQ$SAUCES_FFQ_Poids
+#
+#sgsdata_nudges_FFQ$VIANDES_FFQ_Poids <- sgsdata_nudges_FFQ$POULET_OEUFS_FFQ_Poids  + sgsdata_nudges_FFQ$AUTRE_PDTS_ANIMAUX_FFQ_Poids  + sgsdata_nudges_FFQ$VIANDE_ROUGE_PORC_FFQ_Poids
+#
+#
+#
+#sgsdata_nudges_FFQ <- sgsdata_nudges_FFQ %>%
+#  rename_with(
+#    ~ str_remove_all(.x, "_FFQ"),
+#    .cols = everything()
+#  ) %>%
+#  # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
+#  filter(
+#    if_any(ends_with("_Poids"), ~ . != 0))
+#
 #cAMPAGNE 1
 sgsdata_Booklet_IT11  <- sgsdata_Booklet_IT %>% filter( Campagne == 1 , Periode ==0, groupe==0, Mesure== "Carnet",UC_TI ==1) 
 sgsdata_Booklet_IT21 <-sgsdata_Booklet_IT %>% filter(Campagne == 1, Periode ==1, groupe==0, Mesure== "Carnet",UC_TI ==1)  
@@ -1687,8 +1705,7 @@ sgsdata_Booklet_IT1 <- left_join(sgsdata_Booklet_IT11, sgsdata_Booklet_IT21, by=
 sgsdata_Booklet_IT1 <- sgsdata_Booklet_IT1 %>%
   select(matches("Poids|Identifiant")) %>%
   # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
-  filter(
-    if_any(ends_with("_Poids"), ~ . != 0))
+  filter(if_any(matches("_Poids\\.(x|y)$"), ~ . != 0))
 
 #FFQ CAMP 1 
 sgsdata_FFQ_IT11 <- sgsdata_complet_FFQ %>% filter(Campagne == 1, Periode ==0, groupe==0, Mesure != "Carnet",UC_TI ==1) 
@@ -1698,17 +1715,26 @@ sgsdata_FFQ_IT1<- sgsdata_FFQ_IT1 %>%
   select(matches("Poids|Identifiant"))
 
 sgsdata_FFQ_IT1 <- sgsdata_FFQ_IT1 %>%
-  semi_join(sgsdata_Booklet_IT1 , by ="Identifiant")
+  filter(if_all(ends_with(".y"), ~ !is.na(.))) %>%
+  semi_join(sgsdata_Booklet_IT1, by = "Identifiant")
+
+
 
 sgsdata_Booklet_IT1  <-sgsdata_Booklet_IT1 %>%
-  semi_join(sgsdata_FFQ_IT1 , by ="Identifiant")
+  filter(if_all(ends_with(".y"), ~ !is.na(.))) %>%
+  semi_join(sgsdata_FFQ_IT1, by = "Identifiant")
+
+
 
 #CAMP 2 
 sgsdata_Booklet_IT12 <- sgsdata_Booklet_IT %>% filter(Campagne == 2 , Periode ==0, groupe==0, Mesure== "Carnet",UC_TI ==1)  
 sgsdata_Booklet_IT22 <- sgsdata_Booklet_IT %>% filter(Campagne == 2, Periode ==1, groupe==0, Mesure== "Carnet",UC_TI ==1)   
 sgsdata_Booklet_IT2 <- left_join(sgsdata_Booklet_IT12, sgsdata_Booklet_IT22, by="Identifiant")
 sgsdata_Booklet_IT2 <- sgsdata_Booklet_IT2 %>%
-  select(matches("Poids|Identifiant"))
+  select(matches("Poids|Identifiant")) %>%
+  # on ne garde que les lignes où au moins une colonne _Poids est non-zéro
+  filter(if_any(matches("_Poids\\.(x|y)$"), ~ . != 0))
+
 
 sgsdata_FFQ_IT12<- sgsdata_complet_FFQ %>% filter(Campagne == 2, Periode ==0, groupe==0, Mesure != "Carnet",UC_TI ==1)  
 sgsdata_FFQ_IT22 <-sgsdata_complet_FFQ %>% filter(Campagne == 2, Periode ==1 ,groupe==0,  Mesure != "Carnet",UC_TI ==1) 
@@ -1717,43 +1743,51 @@ sgsdata_FFQ_IT2 <- sgsdata_FFQ_IT2 %>%
   select(matches("Poids|Identifiant"))
 
 sgsdata_FFQ_IT2 <- sgsdata_FFQ_IT2 %>%
-  semi_join(sgsdata_Booklet_IT2 , by ="Identifiant")
+  filter(if_all(ends_with(".y"), ~ !is.na(.))) %>%
+  semi_join(sgsdata_Booklet_IT2, by = "Identifiant")
+
+
 
 sgsdata_Booklet_IT2 <-sgsdata_Booklet_IT2 %>%
-  semi_join(sgsdata_FFQ_IT2 , by ="Identifiant")
+  filter(if_all(ends_with(".y"), ~ !is.na(.))) %>%
+  semi_join(sgsdata_FFQ_IT2, by = "Identifiant")
 
-sgsdata_Booklet_nudges1 <- sgsdata_nudges_Carnet %>% filter(Periode ==0,str_detect(Identifiant, "Epimut", ),  Mesure== "Carnet",UC_TI ==1)
-sgsdata_Booklet_nudges2 <-sgsdata_nudges_Carnet %>% filter(Periode ==1,str_detect(Identifiant, "Epimut"), Mesure== "Carnet",UC_TI ==1)  
-sgsdata_Booklet_nudges_vf <- left_join(sgsdata_Booklet_nudges1, sgsdata_Booklet_nudges2, by="Identifiant")
-sgsdata_Booklet_nudges_vf <- sgsdata_Booklet_nudges_vf %>%
-  select(matches("Poids|Identifiant"))
+#sgsdata_Booklet_nudges1 <- sgsdata_nudges_Carnet %>% filter(Periode ==0,str_detect(Identifiant, "Epimut", ),  Mesure== "Carnet",UC_TI ==1)
+#sgsdata_Booklet_nudges2 <-sgsdata_nudges_Carnet %>% filter(Periode ==1,str_detect(Identifiant, "Epimut"), Mesure== "Carnet",UC_TI ==1)  
+#sgsdata_Booklet_nudges_vf <- left_join(sgsdata_Booklet_nudges1, sgsdata_Booklet_nudges2, by="Identifiant")
+#sgsdata_Booklet_nudges_vf <- sgsdata_Booklet_nudges_vf %>%
+#  select(matches("Poids|Identifiant"))
+#
+#sgsdata_FFQ_nudges1 <- sgsdata_nudges_FFQ %>% filter( Periode ==0,str_detect(Identifiant, "Epimut"), Mesure != "Carnet",UC_TI ==1)
+#sgsdata_FFQ_nudges2 <-sgsdata_nudges_FFQ %>% filter(Periode ==1,str_detect(Identifiant, "Epimut") , Mesure != "Carnet",UC_TI ==1) 
+#sgsdata_FFQ_nudges_vf <- left_join(sgsdata_FFQ_nudges1, sgsdata_FFQ_nudges2, by="Identifiant")
+#sgsdata_FFQ_nudges_vf <- sgsdata_FFQ_nudges_vf %>%
+#  select(matches("Poids|Identifiant"))
+#
+#sgsdata_FFQ_nudges_vf <- sgsdata_FFQ_nudges_vf %>%
+#  semi_join(sgsdata_Booklet_nudges_vf , by ="Identifiant")
+#
+#sgsdata_Booklet_nudges_vf <- sgsdata_Booklet_nudges_vf %>%
+#  semi_join(sgsdata_FFQ_nudges_vf , by ="Identifiant")
 
-sgsdata_FFQ_nudges1 <- sgsdata_nudges_FFQ %>% filter( Periode ==0,str_detect(Identifiant, "Epimut"), Mesure != "Carnet",UC_TI ==1)
-sgsdata_FFQ_nudges2 <-sgsdata_nudges_FFQ %>% filter(Periode ==1,str_detect(Identifiant, "Epimut") , Mesure != "Carnet",UC_TI ==1) 
-sgsdata_FFQ_nudges_vf <- left_join(sgsdata_FFQ_nudges1, sgsdata_FFQ_nudges2, by="Identifiant")
-sgsdata_FFQ_nudges_vf <- sgsdata_FFQ_nudges_vf %>%
-  select(matches("Poids|Identifiant"))
-
-sgsdata_FFQ_nudges_vf <- sgsdata_FFQ_nudges_vf %>%
-  semi_join(sgsdata_Booklet_nudges_vf , by ="Identifiant")
-
-sgsdata_Booklet_nudges_vf <- sgsdata_Booklet_nudges_vf %>%
-  semi_join(sgsdata_FFQ_nudges_vf , by ="Identifiant")
 
 
-
-sgsdata_FFQ_nudges_vf <-sgsdata_FFQ_nudges_vf  %>%
-  semi_join(sgsdata_Booklet_nudges_vf , by ="Identifiant")
+#sgsdata_FFQ_nudges_vf <-sgsdata_FFQ_nudges_vf  %>%
+#  semi_join(sgsdata_Booklet_nudges_vf , by ="Identifiant")
 sgsdata_FFQ_IT1 <-sgsdata_FFQ_IT1 %>%
-  semi_join(sgsdata_Booklet_IT1, by ="Identifiant")
-sgsdata_FFQ_IT2 <-sgsdata_FFQ_IT2 %>%
-  semi_join(sgsdata_Booklet_IT2, by ="Identifiant")
+  semi_join(sgsdata_Booklet_IT1, by = "Identifiant")
+
+
+
+sgsdata_FFQ_IT2 <-sgsdata_FFQ_IT2%>%
+  semi_join(sgsdata_Booklet_IT2, by = "Identifiant")
 
 
 process_data <- function(df) {
   # lookup pour renommer les colonnes poids
   traductions <- c(
     VIANDES_Poids = "Meats",
+    CAFE_THE_Poids = "Coffee / Tea",
     CEREALES_PD_Poids                          = "Breakfast cereals",
     CHARCUTERIE_HORS_JB_Poids                   = "Cold cuts excluding white ham",
     DESSERTS_LACTES_Poids                       = "Dairy Desserts",
@@ -1776,7 +1810,7 @@ process_data <- function(df) {
     POISSONS_Poids                              = "Fish",
     PORC_Poids                                  = "Pork",
     POULET_Poids                                = "Chicken",
-    QUICHES_PIZZAS_TARTES_SALEES_Poids          = "Quiches, Pizzas & Savoury Pies",
+    QUICHES_PIZZAS_TARTES_SALEES_Poids          = "Quiches/ Pizzas/ Savoury Pies",
     SAUCES_Poids                                = "Sauces",
     SNACKS_AUTRES_Poids                         = "Other Snacks",
     VIANDE_ROUGE_Poids                          = "Red Meat",
@@ -1786,20 +1820,18 @@ process_data <- function(df) {
     LAIT_Poids                                  = "Milk",
     SODAS_LIGHT_Poids                           = "Diet Sodas",
     SODAS_SUCRES_Poids                          = "Sugary Sodas",
-    FV_Poids  = "Fruits and vegetables",
-    FEC_Poids  = "Starchy food",
+    FV_Poids  = "Fruits/vegetables",
+    FEC_Poids  = "Starchy foods",
     PDTS_LAITIERS_Poids = "Dairy products",
     POULET_OEUFS_Poids = "Eggs / chicken",
     AUTRE_PDTS_ANIMAUX_Poids ="Cold cuts",
     PLATS_PREP_Poids ="Prepared dishes",
     VIANDE_ROUGE_PORC_Poids ="Red meat/Pork",
     MG_Poids = "Added fats",
-    PDTS_DISCRETIONNAIRES_Poids  = "Discretionnary food",
+    PDTS_DISCRETIONNAIRES_Poids  = "Discretionary foods",
     SSB_Poids  ="Sugary sweet beverages",
-    SOMME_Poids_HB = "Total without beverages",
-    SOMME_POIDS_HB = "Total without beverages",
-    SOMME_POIDS  = "Sum",
-    SOMME_Pois  = "Sum"
+    SOMME_HB = "Total without beverages"
+    
     
     
   )
@@ -1824,8 +1856,8 @@ process_data <- function(df) {
     -ends_with(".y"),
      -starts_with("SOMME_POURCENT_Poids"),
    -starts_with("total_Poids"),
-   -starts_with("SOMME_HB_Poids"),
-  -starts_with("SOMME_POIDS_HB"),
+  -starts_with("SOMME_Poids_HB"),
+ -starts_with("SOMME_POIDS_HB"),
    -starts_with("SOMME_Poids"),
   -starts_with("SOMME_POIDS"),
    -starts_with("SOMME_FFQ_KCAL"),
@@ -1878,7 +1910,11 @@ process_data <- function(df) {
   -starts_with("FEC_RAF_Poids"),
   -starts_with("POULET_Poids"),
  -starts_with("LEG_SECS_Poids"),
-  -starts_with("FRUITS_SECS_Poids")
+  -starts_with("FRUITS_SECS_Poids"),
+-starts_with("SOMME_HB"),
+-starts_with("SOMME_POIDS"),
+-starts_with("SOMME_HORS_BOISSON")
+
       
     ) %>%
     # 5) Renommer selon la lookup, en traduisant si le début du nom correspond
@@ -1908,25 +1944,27 @@ sgsdata_Booklet_IT1     <- process_data(sgsdata_Booklet_IT1)
 sgsdata_FFQ_IT1         <- process_data(sgsdata_FFQ_IT1)
 sgsdata_Booklet_IT2     <- process_data(sgsdata_Booklet_IT2)
 sgsdata_FFQ_IT2         <- process_data(sgsdata_FFQ_IT2)
-sgsdata_Booklet_nudges_vf <- process_data(sgsdata_Booklet_nudges_vf)
-sgsdata_FFQ_nudges_vf <- process_data(sgsdata_FFQ_nudges_vf)
+#sgsdata_Booklet_nudges_vf <- process_data(sgsdata_Booklet_nudges_vf)
+#sgsdata_FFQ_nudges_vf <- process_data(sgsdata_FFQ_nudges_vf)
+#
+
 
 
 make_df_plot <- function(df_summary) {
-  library(dplyr)
-  library(stringr)
-  library(tibble)
-  
-  # 1) On repère les racines de colonnes en .x
+  library(dplyr); library(stringr); library(tibble)
+
   bases <- names(df_summary) %>%
     str_subset("\\.x$") %>%
     str_remove("\\.x$")
-  
-  # 2) On construit la trame brute
-  df_plot <- tibble(
-    base_raw   = bases,
-    x          = unlist(df_summary[paste0(bases, ".x")],    use.names = FALSE),
-    diff       = unlist(df_summary[paste0(bases, "_diff")], use.names = FALSE)
+
+  if (length(bases) == 0) {
+    stop("Aucune colonne '.x' trouvée. Tu as probablement supprimé/renommé les colonnes '.x' dans process_data() ou avant.")
+  }
+
+  tibble(
+    base_raw = bases,
+    x        = unlist(df_summary[paste0(bases, ".x")],    use.names = FALSE),
+    diff     = unlist(df_summary[paste0(bases, "_diff")], use.names = FALSE)
   ) %>%
     mutate(
       base_clean  = base_raw %>%
@@ -1938,23 +1976,11 @@ make_df_plot <- function(df_summary) {
       signe       = if_else(diff >= 0, "Rise", "Decrease"),
       diff_label  = sprintf("%+.2f", diff),
       x_label_pos = max(x + diff, na.rm = TRUE) * 1.02
-    )
-  
-  # 3) On ordonne le facteur base selon l’ordre décroissant de |diff|
-  if (nrow(df_plot) > 1) {
-    ordered_levels <- df_plot %>%
-      arrange(desc(abs(diff))) %>%
-      pull(base_clean) %>%
-      unique()   # <-- on retire d’éventuels doublons
-  } else {
-    ordered_levels <- df_plot$base_clean
-  }
-  
-  # 4) On crée la variable factorielle sans niveau dupliqué
-  df_plot %>%
-    mutate(
-      base = factor(base_clean, levels = ordered_levels)
     ) %>%
+    { 
+      ordered_levels <- if (nrow(.) > 1) .$base_clean[order(-abs(.$diff))] else .$base_clean
+      mutate(., base = factor(base_clean, levels = unique(ordered_levels)))
+    } %>%
     select(base, x, diff, signe, diff_label, x_label_pos)
 }
 
@@ -1963,17 +1989,17 @@ sgsdata_Booklet_IT1     <- make_df_plot(sgsdata_Booklet_IT1)
 sgsdata_FFQ_IT1         <- make_df_plot(sgsdata_FFQ_IT1)
 sgsdata_Booklet_IT2     <- make_df_plot(sgsdata_Booklet_IT2)
 sgsdata_FFQ_IT2         <- make_df_plot(sgsdata_FFQ_IT2)
-sgsdata_Booklet_nudges_vf <- make_df_plot(sgsdata_Booklet_nudges_vf)
-sgsdata_FFQ_nudges_vf <- make_df_plot(sgsdata_FFQ_nudges_vf)
+#sgsdata_Booklet_nudges_vf <- make_df_plot(sgsdata_Booklet_nudges_vf)
+#sgsdata_FFQ_nudges_vf <- make_df_plot(sgsdata_FFQ_nudges_vf)
 
 # 1) On regroupe vos 6 data.frames df_plot dans une liste nommée
 list_df_plot <- list(
   Booklet_Winter_23    = sgsdata_Booklet_IT1,
   FFQ_Winter_23        = sgsdata_FFQ_IT1,
   Booklet_Winter_24    = sgsdata_Booklet_IT2,
-  FFQ_Winter_24        = sgsdata_FFQ_IT2,
-  Booklet_Winter_22  = sgsdata_Booklet_nudges_vf,
-  FFQ_22   = sgsdata_FFQ_nudges_vf
+  FFQ_Winter_24        = sgsdata_FFQ_IT2#,
+  #Booklet_Winter_22  = sgsdata_Booklet_nudges_vf,
+  #FFQ_22   = sgsdata_FFQ_nudges_vf
 )
 
 
@@ -1994,6 +2020,14 @@ df_ffq_24 <- sgsdata_FFQ_IT2       %>% mutate(campaign = "FFQ Winter 24")
 df_ffq_all <- bind_rows(#df_ffq_22,
                         df_ffq_23,
                         df_ffq_24)
+
+
+df_booklet_all <- df_booklet_all %>%
+  filter(!str_detect(as.character(base), regex("total|hors boisson|without beverages", ignore_case = TRUE)))
+
+df_ffq_all <- df_ffq_all %>%
+  filter(!str_detect(as.character(base), regex("total|hors boisson|without beverages", ignore_case = TRUE)))
+
 make_plot_multi <- function(
     df, titre, campaign_colors, offset = 5,
     arrow_len_mm = 4, arrow_angle = 12, arrow_size = 1.4,
@@ -2073,7 +2107,6 @@ make_plot_multi <- function(
 
 # Exemple d’utilisation
 campaign_cols_booklet <- c(
-  #"Booklet Winter 22" = "#1b9e77",
   "Booklet Winter 23" = "#d95f02",
   "Booklet Winter 24" = "#7570b3"
 )
@@ -2120,7 +2153,7 @@ p_ffq <- make_plot_multi(
 print(p_ffq)
 
 
-library(patchwork)
+
 
 
 
@@ -2132,9 +2165,7 @@ tbls_plot <- list(
   Booklet_IT1       = sgsdata_Booklet_IT1,
   FFQ_IT1           = sgsdata_FFQ_IT1,
   Booklet_IT2       = sgsdata_Booklet_IT2,
-  FFQ_IT2           = sgsdata_FFQ_IT2,
-  Booklet_nudges_vf = sgsdata_Booklet_nudges_vf,
-  FFQ_nudges_vf     = sgsdata_FFQ_nudges_vf
+  FFQ_IT2           = sgsdata_FFQ_IT2
 )
 
 library(dplyr)
@@ -2189,70 +2220,6 @@ writeData(wb, sheet = "df6", df6)
 addWorksheet(wb, "df7")
 writeData(wb, sheet = "df7", df7)
 
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "df8")
-writeData(wb, sheet = "df8", df7)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_nudges_T1")
-writeData(wb, sheet = "tableau_final_nudges_T1", tableau_final_nudges_T1)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_nudges_T2")
-writeData(wb, sheet = "tableau_final_nudges_T2", tableau_final_nudges_T2 )
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_nudges_T3")
-writeData(wb, sheet = "tableau_final_nudges_T3",tableau_final_nudges_T3)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT11_T1")
-writeData(wb, sheet = "tableau_final_IT11_T1", tableau_final_IT11_T1)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT11_T2")
-writeData(wb, sheet = "tableau_final_IT11_T2", tableau_final_IT11_T2)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT11_T3")
-writeData(wb, sheet = "tableau_final_IT11_T3", tableau_final_IT11_T3)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT12_T1")
-writeData(wb, sheet = "tableau_final_IT12_T1", tableau_final_IT12_T1)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT12_T2")
-writeData(wb, sheet = "tableau_final_IT12_T2", tableau_final_IT12_T2)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_IT12_T3")
-writeData(wb, sheet = "tableau_final_IT12_T3", tableau_final_IT12_T3)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_CSGA_T1")
-writeData(wb, sheet = "tableau_final_CSGA_T1", tableau_final_CSGA_T1)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_CSGA_T2")
-writeData(wb, sheet = "tableau_final_CSGA_T2", tableau_final_CSGA_T2)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_CSGA_T3")
-writeData(wb, sheet = "tableau_final_CSGA_T3", tableau_final_CSGA_T3)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_com_T1")
-writeData(wb, sheet = "tableau_final_com_T1", tableau_final_com_T1)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_com_T2")
-writeData(wb, sheet = "tableau_final_com_T2", tableau_final_com_T2)
-
-# Ajouter chaque dataframe dans un onglet différent
-addWorksheet(wb, "tableau_final_com_T3")
-writeData(wb, sheet = "tableau_final_com_T3", tableau_final_com_T3)
-
 
 # Ajouter chaque dataframe dans un onglet différent
 addWorksheet(wb, "tableau_final")
@@ -2263,6 +2230,5 @@ addWorksheet(wb, "wide_pct")
 writeData(wb, sheet = "wide_pct", wide_pct)
 
 
-
-saveWorkbook(wb,(paste0("Données analyses - Article N°2 FFQvsCarnets/Comparaison.xlsx")))
+saveWorkbook(wb,"C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Comparaison_vf.xlsx")
 

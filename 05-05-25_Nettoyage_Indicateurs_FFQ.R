@@ -7,39 +7,40 @@ library("dplyr");library("tidyr");library("ggplot2");library("gridExtra");librar
 library(questionr)
 
   ## Importation des données ---------------------
+researcher<-"adenieul" #"vbellassen" edumont
 if (researcher == "adenieul") {
-  setwd("C:/Users/adenieul/ownCloud - Anaelle Denieul@cesaer-datas.inra.fr/TI Dijon/donnees")
+  setwd <- paste0("C:/Users/adenieul/ownCloud - Anaelle Denieul@cesaer-datas.inra.fr/TI Dijon/donnees")
 } else {
-  setwd(paste0("C:/Users/", researcher, "/Owncloud/TI Dijon/donnees"))
+  setwd(paste0("C:/Users/",researcher,"/Owncloud/TI Dijon/donnees"))
 }
 
     ### Entrer la date de la campagne ---------------------
 campaign<- "24-03" #22-11 #23-02 #23-11 #24/03 
 
     ### Importation des données de Nov_2022 ------------------
-questionnaire_nov_22<- read.xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/22-11_FFQ.xlsx",sep=""))
+questionnaire_nov_22<- read.xlsx(paste("Données analysées - Article N°1 chèques/Fichiers_bruts/22-11_FFQ.xlsx",sep=""))
 questionnaire_nov_22<- questionnaire_nov_22%>% mutate_all(~gsub("\"","",.))
 questionnaire_nov_22<- questionnaire_nov_22%>% mutate_all(~gsub("\\(", "",.))
 questionnaire_nov_22<- questionnaire_nov_22%>% mutate_all(~gsub("\\)", "",.))
 
     ### Importation des données de Mars_2023 ------------------
-questionnaire_mars_23<- read.xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/23-02_FFQ.xlsx",sep=""))
+questionnaire_mars_23<- read.xlsx(paste("Données analysées - Article N°1 chèques/Fichiers_bruts/23-02_FFQ.xlsx",sep=""))
 questionnaire_mars_23<- questionnaire_mars_23%>% mutate_all(~gsub("\"","",.))
 
     ### Importation des données de Nov_2023 -------------------
-questionnaire_nov_23<- read.xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_FFQ.xlsx",sep=""))
+questionnaire_nov_23<- read.xlsx(paste("Données analysées - Article N°1 chèques/Fichiers_bruts/23-11_FFQ.xlsx",sep=""))
 questionnaire_nov_23<- questionnaire_nov_23%>% mutate_all(~gsub("\"","",.))
 
     ### Importation des données de Mars_2024 --------------------
-questionnaire_mars_24<- read.xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_FFQ.xlsx",sep=""))
+questionnaire_mars_24<- read.xlsx(paste("Données analysées - Article N°1 chèques/Fichiers_bruts/24-03_FFQ.xlsx",sep=""))
 questionnaire_mars_24<- questionnaire_mars_24%>% mutate_all(~gsub("\"","",.))
 
     ### Importation des données des tableaux annexes ----------------
 
-CALNUT<- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_FFQ.xlsx")
-Encodage <- read_xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Freq_FFQ.xlsx"))
-Taille_Portion <- read_xlsx(paste("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Taille portion.xlsx"))
-Recap_envoi_cheques <- read_excel("C:/Users/denieul-barbot/Dropbox/Thèse/Article_1/Données analysées - Article N°1 chèques/Tableaux_annexes/Recap_envoi_cheque.xlsx")
+CALNUT<- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Alim_CALNUT_CODAPPRO_FFQ.xlsx")
+Encodage <- read_xlsx(paste("Données analysées - Article N°1 chèques/Tableaux_annexes/Freq_FFQ.xlsx"))
+Taille_Portion <- read_xlsx(paste("Données analysées - Article N°1 chèques/Tableaux_annexes/Taille portion.xlsx"))
+Recap_envoi_cheques <- read_excel("Données analysées - Article N°1 chèques/Tableaux_annexes/Recap_envoi_cheque.xlsx")
 
 
 
@@ -142,7 +143,7 @@ Frame[Frame ==   "Au moins un verre durant cette période"]<-1
 Frame[Frame ==   "Plusieurs bols ou tasses par jour"]<-2
 Frame[Frame ==   "Entre 2 et 5 bols ou tasses par semaine"]<-3.5/7
 Frame[Frame ==   "Un bol ou tasse par semaine"]<-1/7
-Frame[Frame ==   "Un bol ou tasse par jour ou presque"]<-1
+Frame[Frame ==   "Un bol ou tasse par jour ou presque"]<-1/7
 
     ### Dictionnaire des traductions pour les boissons (tasses) -------
 Frame[Frame == "Aucun" ]<- 0
@@ -244,7 +245,7 @@ if (campaign == "24-03") {
       `De.3.a.10.ans` = "21..Q71b",
       `De.11.a.14.ans` = "22..Q71c",
       `De.15.a.17.ans` = "23..Q71d", 
-      `De.18.ans.et.plus` = "24..Q71e"
+      `De.18.ans.et.plus` = "24..Q71e",
     )
   
     metadata_bis <- questionnaire_nov_23 %>%
@@ -254,7 +255,7 @@ if (campaign == "24-03") {
         `Quelle.est.votre.situation.matrimoniale.`,
         `Avez.vous.des.enfants.a.charge.`,
         `De.moins.de.3.ans`, `De.3.a.10.ans`, `De.11.a.14.ans`,
-        `De.15.a.17.ans`, `De.18.ans.et.plus`
+        `De.15.a.17.ans`, `De.18.ans.et.plus`,
       )
 
     metadata <- merge(metadata_bis, metadata, by = "Identifiant", all.x = TRUE)
@@ -517,9 +518,10 @@ metadata<- metadata[, !names(metadata) %in% c("De.moins.de.3.ans", "De.3.a.10.an
 
 print(unique(metadata$Identifiant))
 
+
 #Ajouter les données de SP041 à MARS23 
 if (campaign == "23-02") {
-  file_path <- "C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_22.xlsx"
+  file_path <- "C:/Users/adenieul/ownCloud - Anaelle Denieul@cesaer-datas.inra.fr/TI Dijon/donnees/Données analysées - Article N°1 chèques/Fichiers_nettoyés/Fichiers_prétraités/FFQ_Tableaux_nov_22.xlsx"
   metadata22 <- read_excel(file_path, sheet = "Metadata") 
   ligne_SP041_CCAS <- metadata22 %>% filter(Identifiant == "SP041-CCAS")
   # Extraire les colonnes de metadata22 et ligne_SP041_CCAS
@@ -535,7 +537,7 @@ if (campaign == "23-02") {
   metadata <- bind_rows(metadata, ligne_SP041_CCAS)
 }
 
-## CALCUL DES COEFF DE CORRECTION POUR CORRIGER LES FREQUENCES -----------------------------------------
+# CALCUL DES COEFF DE CORRECTION POUR CORRIGER LES FREQUENCES -----------------------------------------
 #
 ## Fonction pour remplacer les NA par zéro ---------
 replace_na_with_zero <- function(x) {
@@ -547,6 +549,198 @@ FREQ_intake <- function(data, x) {
   result[is.na(result)] <- 0
   return(result)
 }
+
+#Ce code en R a pour objectif de calculer et de corriger la fréquence de consommation de certaines catégories d'aliments 
+#qui appartieinnent à une catégorie alimentaire générale : crudités, fruits, légumes, pain, produits laitiers, poisson, viande, charcuterie
+
+## Correction des fréquences de consommation ------------
+### Descritpion du fonctionnement du code : exemple avec les crudités -----------
+# Ici cat et sous_cat sont des chaînes de caractères représentant respectivement le nom de la catégorie
+#générale pour les crudités et les noms des colonnes contenant les fréquences de consommation de différentes catégories de crudités.
+cat <- c("des.crudites.gen")
+sous_cat <- c("Des.salades.composees.uniquement.de.plusieurs.legumes.crus.tomates.et.concombrescarottes.et.salade.verte.",
+              "de.la.salade.vertede.la.machede.la.roquettedes.epinardsdu.cresson",
+              "des.carottes.rapees", "de.l.avocat.au.moins.un.demi.avocat" ,"d.autres.crudites")
+
+#Pour chaque ligne du DataFrame Frame, la somme des fréquences de consommation des différentes catégories de crudités est calculée.
+#Pour chaque sous-catégorie dans sous_cat, le code recherche les colonnes correspondantes dans Frame.
+#Les valeurs de ces colonnes sont converties en numérique et additionnées pour obtenir somme_freq.
+#somme_freq est ensuite attribuée à la nouvelle colonne somme_freq_crudites pour la ligne correspondante.
+Frame$somme_freq_crudites <- NA_real_
+#Frame$somme_freq_aliment est une nouvelle colonne dans Frame initialisée avec des valeurs manquantes (NA) de type numérique.
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) { ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_crudites[row] <- somme_freq}
+#Pour chaque sous-catégorie dans sous_cat, le code recherche les colonnes correspondantes (ncol1) ainsi 
+#que les colonnes correspondant à cat (ncol2).
+#Si ces colonnes existent et ne sont pas NA, les valeurs des colonnes de sous-catégorie sont normalisées.
+#replace_na_with_zero est utilisé pour remplacer les valeurs manquantes par des zéros.
+#FREQ_intake qui permet d'exraire la fréquence de consommation.
+#Les valeurs des colonnes de sous-catégorie sont multipliées par le ratio 
+#de la moyenne des fréquences de la catégorie générale (cat) sur la moyenne des sommes des fréquences des sous-catégories.
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) {
+  if (!is.na(ncol1) && !is.na(ncol2)) { Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * 
+    replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_crudites))}}}
+
+### Correction des légumes cuits -----------
+cat <- c("des.legumes.cuits")
+sous_cat <- c("de.la.soupe.de.legumes","des.haricots.verts", "des.endivesdes.epinardsdu.cresson", "des.poireaux",
+              "du.chou.vertchou.fleurBruxellesbrocolis", "des.carottes.cuites", "des.courgettesdes.auberginesdes.poivronsdes.tomates.cuites.ratatouille.",
+              "des.petits.pois", "des.artichautsdu.fenouildes.aspergesdu.celeri", "des.champignons", 
+              "des.legumes.secs.lentillesharicots.secspois.chichesfeves.","du.mais1",
+              "du.potirondes.patates.douces", "de.l.oignon.2")
+Frame$somme_freq_legumes <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_legumes[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_legumes))}}}
+
+### Correction des légumineuses ------------
+cat <- c("des.legumes.secs.gen")
+sous_cat <- c("des.tartinables.a.base.de.legumes.secs.houmous","des.falafels",
+              "du.tofudes.steaks.vegetaux.et.autres.similis.carnes", "Lentilles")
+Frame$somme_freq_legumineuses <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_legumineuses[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_legumineuses))}}}
+
+### Correction des Fruits -----------
+cat <- c("des.fruits.y.compris.seches.et.a.coque")
+sous_cat <- c("des.compotes","des.fruits.en.sirop","des.abricotspechesprunescerises", 
+              "des.fraisesframboises", "du.raisin", "du.melonde.la.pasteque", 
+              "des.bananes", "des.kiwis", "des.agrumes.orangesmandarinespamplemoussescitrons.",
+              "des.pommesdes.poires", "des.fruits.exotiques.ananasmangueslitcheesgoyaves.",
+              "des.fruits.seches.abricotsdattesfiguespruneaux.", "des.fruits.a.coque.noixnoisettesamandes.")
+Frame$somme_freq_fruits <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_fruits[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_fruits))}}}
+
+
+### Correction des Poissons ---------
+cat <- c("du.poisson.en.general.y.compris.coquillages.et.crustaces")
+sous_cat <- c("du.poisson.cabillaudlieumerlansoletruite.frais.ou.congele.sauf.poisson.pane",
+              "du.poisson.a.l.huile.thonsardines.", "du.poisson.fume.saumontruite", 
+              "du.poisson.sale.ou.en.saumure.morueharenganchoissprats", "du.poisson.pane.cabillaudcolin", 
+              "des.plats.cuisines.a.base.de.poisson", "des.coquillages.mouleshuitrescoquilles.st.Jacques",
+              "des.crustaces.crevettescrabe")
+Frame$somme_freq_poissons <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_poissons[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_poissons))}}}
+
+### Correction des viandes ------------------
+cat <- c("de.la.viande,.hors.abats.et.charcuterie")
+sous_cat <- c("de.la.viande.de.boeuf.sauf.steak.hache",
+              "des.steaks.haches", "de.la.viande.de.porc.sauf.charcuterie", 
+              "de.la.viande.de.veau", "de.la.viande.d.agneaude.mouton", 
+              "de.la.volaille.pouletdinde.du.lapin", "du.foie.de.genisse.volaille",
+              "des.andouillettesdu.boudin.et.autres.abats")
+
+Frame$somme_freq_viande <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_viande[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_viande))}}}
+
+### Correction de la charcuterie ------------------
+cat <- c("de.la.charcuteriedes.abats.ou.des.oeufs")
+sous_cat <- c("du.foie.genissevolaillesautres.",
+              "du.pate.ou.des.rillettes", "du.jambon.blanc", 
+              "du.jambon.crubacon", "des.saucisses.fraiches.ou.fumees.y.compris.merguez", 
+              "du.saucisson.sec.ou.salamiy.compris.a.l.aperitif", "du.cervelas.ou.de.la.mortadelle",
+              "de.la.langue.de.boeufdes.tripesdu.boudindes.andouillettesdes.ris.de.veaudes.rognons",
+              "des.oeufssur.le.plat.en.omelette1", "des.oeufspochesdurs.ou.a.la.coque.1")
+Frame$somme_freq_charcut <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_charcut[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_charcut))}}}
+
+
+### Correction des produits laitiers --------------
+cat <- c("du.fromage.et.des.produits.laitiers.y.compris.les.laits.vegetaux")
+sous_cat <- c("de.l.Emmentaldu.Gruyeredu.Comtedu.Beaufort.rape.sur.les.plats.patesriz.",
+              "de.l.Emmentaldu.Gruyeredu.Comtedu.Beaufort.en.morceaux", "du.Roquefortdu.Bleu.quelle.qu.en.soit.l.origine", 
+              "du.fromage.de.chevre", "du.fromage.a.pate.molle.camembertcoulommiersbrie.", 
+              "du.fromage.a.tartiner.cancoillotteSaint.MoretVache.qui.rit.", "de.la.mozzarella",
+              "autres.types.de.fromages.camembertbrie.", "du.fromage.blanc.ou.des.yaourts.a.0.de.matieres.grasses.natureaux.fruits.", 
+              "du.fromage.blancdes.petits.suisses.ou.des.yaourts.a.2030.ou.40.de.matieres.grasses",
+              "du.fromage.blanc.a.0.de.matieres.grasses.natureaux.fruits.", "du.fromage.blanc.a.2030.ou.40.de.matieres.grasses.natureaux.fruits.",
+              "des.entremets.cremes.desserts.de.type.Danetteliegeoismoussesflans.", "des.entremets.au.soja.ou.yaourts.au.soja.ou.autres.yaourts.aux.laits.vegetaux")
+Frame$somme_freq_produits_laitiers <- NA_real_
+for (row in 1:nrow(Frame)) {somme_freq <- 0
+for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+Frame$somme_freq_produits_laitiers[row] <- somme_freq}
+for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+ncol2 <- grep(cat, colnames(Frame))
+if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+  Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_produits_laitiers))}}}
+
+### Correction du pain -----------
+if (campaign == "23-11" | campaign == "24-03" ) {
+  cat <- c("du.paindes.biscottes.ou.des.cereales.de.type.petit.dejeuner")
+  sous_cat <- c("du.pain.blancde.mie.hors.petit.dejeuner.",
+                "du.pain.blanc.au.petit.dejeuner", "du.painspeciaux.hors.petit.dejeuner.",
+                "du.pain.complet.et.autres.pains.speciaux.au.petit.dejeuner", "des.biscottesdes.craquottesdes.pains.grilles.type.suedois.hors.petit.dejeuner", 
+                "des.biscottesdes.craquottesdes.pains.grilles.au.petit.dejeuner", "des.cereales.de.type.petit.dejeuner.corn.flakesCheerios.au.chocolatcereales.souffleesmuesli")
+  Frame$somme_freq_pain <- NA_real_
+  for (row in 1:nrow(Frame)) {somme_freq <- 0
+  for (sc in sous_cat) {ncol <- grep(sc, colnames(Frame))
+  if (length(ncol) > 0) { values <- as.numeric(Frame[row, ncol])
+  somme_freq <- somme_freq + sum(values, na.rm = TRUE)}}
+  Frame$somme_freq_pain[row] <- somme_freq}
+  for (i in seq_along(sous_cat)) { ncol1 <- grep(sous_cat[i], colnames(Frame))
+  ncol2 <- grep(cat, colnames(Frame))
+  if (length(ncol1) > 0 && length(ncol2) > 0) { if (!is.na(ncol1) && !is.na(ncol2)) {
+    Frame[, ncol1] <- replace_na_with_zero(FREQ_intake(Frame, ncol1)) * replace_na_with_zero(mean(FREQ_intake(Frame, ncol2)) / mean(Frame$somme_freq_pain))}}}
+  
+}
+
+print(unique(Frame$Identifiant))
+
+
+
+
 
 
 # ATTRIBUTION DES TAILLES DE PORTION -------------------------------
@@ -719,18 +913,23 @@ for (i in seq_along(categories)) {
 FFQ_POIDS$ALCOOL_FFQ <- terms
 
 
-
-##CAFE_THE_FFQ---------------------
+##CAFE_THE_FFQ--------------
 FFQ_POIDS$CAFE_THE_FFQ <- rep(0,nrow(Frame))
 ncol1 <- grep("de.cafe.y.compris.decafeine", colnames(Frame))
 ncol2 <- grep("de.the",colnames(Frame))
-term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1) *  Poids_modifie$de.cafe.y.compris.decafeine )
-term2 <-replace_na_with_zero(FREQ_intake(Frame,ncol2)*Poids_modifie$de.the  )
+if (campaign == "22-11" | campaign == "23-02" ) {
+term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1)*replace_na_with_zero(Poids_modifie$de.cafe.y.compris.decafeine))  
+term2 <- replace_na_with_zero(FREQ_intake(Frame, ncol2)*replace_na_with_zero(Poids_modifie$de.the))
+FFQ_POIDS_Int$de.cafe.y.compris.decafeine <-term1 
+FFQ_POIDS_Int$de.the <- term2 
+FFQ_POIDS$CAFE_THE_FFQ <- term1 + term2
+} else {
+term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1))  
+term2 <- replace_na_with_zero(FREQ_intake(Frame, ncol2))  
+FFQ_POIDS_Int$de.cafe.y.compris.decafeine <-term1 
+FFQ_POIDS_Int$de.the <- term2 
 FFQ_POIDS$CAFE_THE_FFQ <- term1 + term2 
-FFQ_POIDS_Int$de.cafe.y.compris.decafeine <- term1
-FFQ_POIDS_Int$de.the <- term2
-
-
+}
 
   ##CEREALES_PD_FFQ---------------
 FFQ_POIDS$CEREALES_PD_FFQ  <- rep(0,nrow(Frame))
@@ -769,18 +968,23 @@ FFQ_POIDS$DESSERTS_LACTES_FFQ <- terms
   ##EAU_FFQ--------------
 FFQ_POIDS$EAU_FFQ <- rep(0,nrow(Frame))
 ncol1 <- grep("d.eau.en.bouteille.ou.bonbonne.verre", colnames(Frame))
+ncol2 <- grep("d.eau.du.robinet.verre", colnames(Frame))
 
 if (campaign == "22-11" | campaign == "23-02" ) {
   term1 <-  replace_na_with_zero(FREQ_intake(Frame,ncol1)*Poids_modifie$d.eau.en.bouteille.ou.bonbonne.verre) 
-  FFQ_POIDS$EAU_FFQ <- term1 
+  term2 <-  replace_na_with_zero(FREQ_intake(Frame,ncol2)*Poids_modifie$d.eau.du.robinet.verre)
+  FFQ_POIDS$EAU_FFQ <- term1 + term2
   FFQ_POIDS_Int$d.eau.en.bouteille.ou.bonbonne.verre <-term1 
-
+  FFQ_POIDS_Int$d.eau.du.robinet.verre <- term2 
 }else{ 
   term1 <-  replace_na_with_zero(FREQ_intake(Frame,ncol1)) 
-  FFQ_POIDS$EAU_FFQ <- term1 
+  term2 <-  replace_na_with_zero(FREQ_intake(Frame,ncol2))
+  FFQ_POIDS$EAU_FFQ <- term1 + term2
   FFQ_POIDS_Int$d.eau.en.bouteille.ou.bonbonne.verre <-term1 
+  FFQ_POIDS_Int$d.eau.du.robinet.verre <- term2 
 }
-
+  ##EPICES_CONDIMENTS_FFQ--------------------
+FFQ_POIDS$EPICES_CONDIMENTS_FFQ <- rep(0,nrow(Frame))
 
   ##FEC_NON_RAF_FFQ----------------------
 FFQ_POIDS$FEC_NON_RAF_FFQ <- rep(0,nrow(Frame))
@@ -947,11 +1151,10 @@ for (i in seq_along(categories)) {
 }
 FFQ_POIDS$LEGUMES_FFQ <- terms
 if (campaign == "23-11" | campaign == "24-03" ) {
-  ncol1 <- grep("de.l.oignon.2", colnames(Frame))
-  term1 <- replace_na_with_zero(FREQ_intake(Frame, ncol1) * 0.05)
-  FFQ_POIDS$LEGUMES_FFQ <- FFQ_POIDS$LEGUMES_FFQ + term1
-  FFQ_POIDS_Int$de.l.oignon.2 <- term1
-}
+  ncol1 <- grep("de.l.oignon.2",colnames(Frame))
+  term1 <-  replace_na_with_zero((FREQ_intake(Frame,ncol1)*0.05)) 
+FFQ_POIDS$LEGUMES_FFQ <- FFQ_POIDS$LEGUMES_FFQ + term1}
+FFQ_POIDS_Int$de.l.oignon.2 <- term1
   
   ##MGA_FFQ -----------------------
 FFQ_POIDS$MGA_FFQ <- rep(0,nrow(Frame))
@@ -1170,29 +1373,16 @@ for (i in seq_along(categories)) {
 FFQ_POIDS$VIANDE_ROUGE_FFQ <- terms
 
 #Somme 
-FFQ_POIDS$POIDS_TOTAL_FFQ <- rowSums(FFQ_POIDS[,2:34])
-FFQ_POIDS$POIDS_HORS_BOISSON_FFQ <- replace_na_with_zero(FFQ_POIDS$POIDS_TOTAL_FFQ- 
+FFQ_POIDS$SOMME_FFQ_POIDS<- rowSums(FFQ_POIDS[,2:35])
+FFQ_POIDS$SOMME_FFQ_HORS_BOISSON <- replace_na_with_zero(FFQ_POIDS$SOMME_FFQ_POIDS- 
                                                            FFQ_POIDS$ALCOOL_FFQ - 
                                                            FFQ_POIDS$FRUITS_JUS_FFQ - 
+                                                           FFQ_POIDS$CAFE_THE_FFQ - 
                                                            FFQ_POIDS$LAIT_FFQ -
                                                            FFQ_POIDS$EAU_FFQ -
                                                            FFQ_POIDS$SODAS_LIGHT_FFQ -
-                                                           FFQ_POIDS$SODAS_SUCRES_FFQ - 
-                                                           FFQ_POIDS$CAFE_THE_FFQ)
+                                                           FFQ_POIDS$SODAS_SUCRES_FFQ)
 
-
-
-
-#Ajout suffixe _Poids
-FFQ_POIDS <- FFQ_POIDS %>%
-  rename_with(
-    ~ ifelse(
-      grepl("_FFQ$", .x),
-      paste0(.x, "_Poids"),
-      .x
-    ),
-    .cols = -any_of(c("Identifiant", "UC_TI"))
-  )
 #CALCUL DE  KCAL -----------------------------------
 df_long <- FFQ_POIDS_Int %>%
   pivot_longer(cols = -Identifiant, names_to = "FFQ_TI", values_to = "Poids") 
@@ -1202,8 +1392,6 @@ df_long <- df_long %>%
 
 df_long <- inner_join(df_long, CALNUT, by= "FFQ_TI", relationship = "many-to-many")
 print(unique(df_long$Identifiant))
-
-
 
 #CALCULER LES KILOCALORIes PAR ALIMENT TI 
 df_long$nrj_kcal_alim <- df_long$nrj_kcal*df_long$Poids*10
@@ -1216,45 +1404,300 @@ FFQ_KCAL<- pivot_wider(
 )
 
 
-
 # Calculer la somme des colonnes  pour chaque ligne
-FFQ_KCAL$KCAL_TOTAL <- rowSums(FFQ_KCAL[, 2:ncol(FFQ_KCAL)], na.rm = TRUE)
+FFQ_KCAL$SOMME_FFQ_KCAL <- rowSums(FFQ_KCAL[, 2:ncol(FFQ_KCAL)], na.rm = TRUE)
 
 
 # Calculer la somme des colonnes hors boisson
-FFQ_KCAL$KCAL_HORS_BOISSON <- with(FFQ_KCAL, KCAL_TOTAL - 
+FFQ_KCAL$SOMME_CARNET_HORS_BOISSON <- with(FFQ_KCAL, SOMME_FFQ_KCAL - 
                                                 ALCOOL - 
                                                 FRUITS_JUS - 
+                                                CAFE_THE - 
                                                 LAIT - 
                                                 EAU - 
                                                 SODAS_LIGHT - 
-                                                SODAS_SUCRES - 
-                                                CAFE_THE)
+                                                SODAS_SUCRES)
+
+FFQ_KCAL$KCAL_SANS_ALCOOL <-  with(FFQ_KCAL, SOMME_FFQ_KCAL - ALCOOL)
+FFQ_KCAL$KCAL_SANS_BOISSON <-  with(FFQ_KCAL, SOMME_FFQ_KCAL - ALCOOL- LAIT - SODAS_LIGHT - SODAS_SUCRES - CAFE_THE- EAU- FRUITS_JUS )
+FFQ_KCAL[, 2:34] <- (FFQ_KCAL[, 2:34] / FFQ_KCAL$SOMME_FFQ_KCAL)
+FFQ_KCAL[, 2:34] <- FFQ_KCAL[, 2:34] * 100
+FFQ_KCAL$SOMME_POURCENT_FFQ <- rowSums(FFQ_KCAL[, 2:34], na.rm = TRUE)
 
 
-# Ajouter le suffixe _FFQ_KCAL à chaque catégorie
-FFQ_KCAL <- FFQ_KCAL %>%
-  rename_with(
-    ~ paste0(.x, "_FFQ_Kcal"),
-    .cols = -Identifiant
-  )
+#CALCUL DE MAR /MER--------------------------------------
+
+## Calcul de MAR et MERF
+
+###Calcul de la vitamine A --------------------------
+###Calcul de la vitamine A --------------------------
+df_long$vit_a_mcg <- (df_long$retinol_mcg + (df_long$beta_carotene_mcg/6)) 
+#Ajout des dernières colonnes modifiées
+df_long$proteines_g_alim <- df_long$Poids* df_long$proteines_g *10 
+df_long$proteines_kcal_alim <- ((df_long$proteines_g*4) * df_long$Poids *10 )
+df_long$ag_18_2_lino_g_alim  <- (df_long$Poids * df_long$ag_18_2_lino_g*10 )
+df_long$ag_18_2_lino_kcal_alim   <- (df_long$Poids *df_long$ag_18_2_lino_g*9*10 )
+df_long$ag_18_3_a_lino_g_alim<- (df_long$Poids *  df_long$ag_18_3_a_lino_g*10 )
+df_long$ag_18_3_a_lino_kcal_alim <- (df_long$Poids*df_long$ag_18_3_a_lino_g*9*10 )
+df_long$ags_g_alim  <- (df_long$ags_g* df_long$Poids * 10)
+df_long$ags_kcal_alim <- (df_long$ags_g *9* df_long$Poids  * 10)
+
+
+### Calcul des quantités de nutriments par aliment -----------------
+# Sélection des colonnes à transformer
+colonnes_a_transformer <- c("fibres_g","ag_20_6_dha_g", "magnesium_mg", "potassium_mg", "calcium_mg", "fer_mg", "cuivre_mg", "zinc_mg",
+                            "selenium_mcg", "iode_mcg","vit_a_mcg","vitamine_d_mcg", "vitamine_e_mg", "vitamine_c_mg",
+                            "vitamine_b1_mg", "vitamine_b2_mg", "vitamine_b3_mg","vitamine_b6_mg", "vitamine_b9_mcg", "vitamine_b12_mcg",
+                            "alcool_g", "sodium_mg", "fructose_g", "glucose_g", "maltose_g", "saccharose_g")
+
+# Vérifier si toutes les colonnes sont présentes
+colonnes_manquantes <- setdiff(colonnes_a_transformer, names(df_long))
+if (length(colonnes_manquantes) > 0) {
+  stop("Les colonnes suivantes ne sont pas reconnues : ", paste(colonnes_manquantes, collapse = ", "))
+}
+
+# Si tout est correct, appliquer la transformation
+df_long <- df_long %>%
+  mutate(across(all_of(colonnes_a_transformer),
+                ~ . * Poids * 10,
+                .names = "{.col}_alim"))
+
+### Somme par ID des nutriments d'interet --------------------------
+colonnes_a_sommer <- names(df_long)[grep("_alim$", names(df_long))]
+print(colonnes_a_sommer)  # Debugging check
+
+somme_par_identifiant <- df_long %>%
+  group_by(Identifiant) %>%
+  summarise(across(colonnes_a_sommer, ~ sum(.x, na.rm = TRUE)))
+
+print(df_long$ags_kcal_alim)
+
+#Somme des sucres 
+somme_par_identifiant$sucre_aj_g_appro_alim <- somme_par_identifiant$fructose_g_alim+ somme_par_identifiant$glucose_g_alim + somme_par_identifiant$maltose_g_alim + somme_par_identifiant$saccharose_g_alim
+
+#Calcul des nutriments sans alcool
+cols_to_extract <- c("Identifiant", "KCAL_SANS_ALCOOL" , "SOMME_FFQ_KCAL") 
+extracted_df <- FFQ_KCAL[, cols_to_extract]
+somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
+cols_to_extract <- c("Identifiant", "Sexe") 
+extracted_df <- metadata[, cols_to_extract]
+somme_par_identifiant <-inner_join(somme_par_identifiant,extracted_df , by="Identifiant")
+
+#Calcul dernières colonnes 
+somme_par_identifiant$proteines_kcal_2000 <- (somme_par_identifiant$proteines_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
+somme_par_identifiant$fibres_g_2000 <- (somme_par_identifiant$fibres_g_alim*2000)/  somme_par_identifiant$SOMME_FFQ_KCAL
+somme_par_identifiant$ag_18_3_a_lino_g_2000 <- (somme_par_identifiant$ag_18_3_a_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
+somme_par_identifiant$ag_18_2_lino_g_2000 <- (somme_par_identifiant$ag_18_2_lino_kcal_alim*100)/(somme_par_identifiant$KCAL_SANS_ALCOOL)
+somme_par_identifiant$ag_20_6_dha_g_2000 <- (somme_par_identifiant$ag_20_6_dha_g_alim*2000)/(somme_par_identifiant$SOMME_FFQ_KCAL)
+
+somme_par_identifiant$ags_kcal_2000 <- (somme_par_identifiant$ags_kcal_alim *100) /(somme_par_identifiant$KCAL_SANS_ALCOOL)
+
+### Rajustement / 2000 KCAL---------------------------------------
+exclude_cols <-  c("proteines_kcal_alim", "ags_kcal_alim", "ag_18_2_lino_g_alim", "ag_18_3_a_lino_g_alim","ag_18_3_a_lino_kcal_alim",
+                   "ags_g_alim","proteines_g_alim" ,"fructose_g_alim"  ,"maltose_g_alim"       ,   "glucose_g_alim"    , "saccharose_g_alim", "alcool_g_alim",
+                   "ag_18_2_lino_kcal_alim", "fibres_g_alim", "ag_20_6_dha_g_alim")
+alim_cols <- grep("_alim$", names(somme_par_identifiant), value = TRUE)
+alim_cols <- setdiff(alim_cols, exclude_cols)
+for (col in alim_cols) {
+  somme_par_identifiant[[col]] <- (somme_par_identifiant[[col]] * 2000) / somme_par_identifiant$SOMME_FFQ_KCAL
+  new_col_name <- sub("_alim$", "_2000", col)
+  names(somme_par_identifiant)[names(somme_par_identifiant) == col] <- new_col_name
+}
+
+### Calcul des ratios du MAR------------------------
+# Les recommandations communes, peu importe le genre
+somme_par_identifiant$ratio_prot <- ifelse(somme_par_identifiant$proteines_kcal_2000 / 10 > 1, 1, somme_par_identifiant$proteines_kcal_2000/ 10)
+somme_par_identifiant$ratio_fibre <- ifelse(somme_par_identifiant$fibres_g_2000 / 30 > 1, 1, somme_par_identifiant$fibres_g_2000 / 30)
+somme_par_identifiant$ratio_lino <- ifelse(somme_par_identifiant$ag_18_2_lino_g_2000/ 4 > 1, 1, somme_par_identifiant$ag_18_2_lino_g_2000 / 4)
+somme_par_identifiant$ratio_alphalino <- ifelse(somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1 > 1, 1, somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1)
+somme_par_identifiant$ratio_dha <- ifelse(somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25 > 1, 1, somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25)
+somme_par_identifiant$ratio_potassium <- ifelse(somme_par_identifiant$potassium_mg_2000 / 3500 > 1, 1, somme_par_identifiant$potassium_mg_2000 / 3500)
+somme_par_identifiant$ratio_calcium <- ifelse(somme_par_identifiant$calcium_mg_2000 / 950 > 1, 1, somme_par_identifiant$calcium_mg_2000 / 950)
+somme_par_identifiant$ratio_selenium <- ifelse(somme_par_identifiant$selenium_mcg_2000 / 70 > 1, 1, somme_par_identifiant$selenium_mcg_2000 / 70)
+somme_par_identifiant$ratio_iode <- ifelse(somme_par_identifiant$iode_mcg_2000 / 150 > 1, 1, somme_par_identifiant$iode_mcg_2000 / 150)
+somme_par_identifiant$ratio_vit_d <- ifelse(somme_par_identifiant$vitamine_d_mcg_2000 / 15 > 1, 1, somme_par_identifiant$vitamine_d_mcg_2000 / 15)
+somme_par_identifiant$ratio_vit_c <- ifelse(somme_par_identifiant$vitamine_c_mg_2000 / 110 > 1, 1, somme_par_identifiant$vitamine_c_mg_2000 / 110)
+somme_par_identifiant$ratio_vit_b2 <- ifelse(somme_par_identifiant$vitamine_b2_mg_2000 / 1.6 > 1, 1, somme_par_identifiant$vitamine_b2_mg_2000 / 1.6)
+somme_par_identifiant$ratio_vit_b12 <- ifelse(somme_par_identifiant$vitamine_b12_mcg_2000 / 4 > 1, 1, somme_par_identifiant$vitamine_b12_mcg_2000 / 4)
+somme_par_identifiant$ratio_vit_b9 <- ifelse(somme_par_identifiant$vitamine_b9_mcg_2000 / 330 > 1, 1, somme_par_identifiant$vitamine_b9_mcg_2000 / 330)
+
+
+# Définir une fonction pour calculer le ratio
+calculate_ratio <- function(sexe, valeur, seuil_femme, seuil_homme) {
+  if (sexe == "Femme") {
+    return(ifelse(valeur / seuil_femme > 1, 1, valeur / seuil_femme))
+  } else if (sexe == "Homme") {
+    return(ifelse(valeur / seuil_homme > 1, 1, valeur / seuil_homme))
+  } else {
+    return(NA)
+  }
+}
+
+## Appliquer la fonction pour chaque nutriment
+somme_par_identifiant$ratio_magnesium <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$magnesium_mg_2000, 300, 380)
+somme_par_identifiant$ratio_fer <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$fer_mg_2000, 16, 11)
+somme_par_identifiant$ratio_cuivre <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$cuivre_mg_2000, 1.5, 1.9) 
+somme_par_identifiant$ratio_zinc <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$zinc_mg_2000, 9.3, 11.7)
+somme_par_identifiant$ratio_vit_a <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vit_a_mcg_2000, 650, 750)
+somme_par_identifiant$ratio_vit_e <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_e_mg_2000, 9, 10)
+somme_par_identifiant$ratio_vit_b1 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b1_mg_2000,0.84, 0.84)
+somme_par_identifiant$ratio_vit_b3 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b3_mg_2000, 13.4, 13.4) 
+somme_par_identifiant$ratio_vit_b6 <- mapply(calculate_ratio, somme_par_identifiant$Sexe, somme_par_identifiant$vitamine_b6_mg_2000, 1.6, 1.7)
+
+somme_par_identifiant <- na.omit(somme_par_identifiant)
+
+### Calcul du MAR -----------------------------------
+
+somme_par_identifiant$MAR <- ((somme_par_identifiant$ratio_prot + somme_par_identifiant$ratio_fibre + somme_par_identifiant$ratio_lino + somme_par_identifiant$ratio_alphalino + somme_par_identifiant$ratio_dha + 
+                                 somme_par_identifiant$ratio_magnesium + somme_par_identifiant$ratio_potassium + somme_par_identifiant$ratio_calcium + somme_par_identifiant$ratio_fer + somme_par_identifiant$ratio_cuivre +
+                                 somme_par_identifiant$ratio_zinc + somme_par_identifiant$ratio_selenium + somme_par_identifiant$ratio_iode + somme_par_identifiant$ratio_vit_a + somme_par_identifiant$ratio_vit_d + 
+                                 somme_par_identifiant$ratio_vit_e + somme_par_identifiant$ratio_vit_c + somme_par_identifiant$ratio_vit_b1 + somme_par_identifiant$ratio_vit_b2 + somme_par_identifiant$ratio_vit_b3 + 
+                                 somme_par_identifiant$ratio_vit_b6 + somme_par_identifiant$ratio_vit_b9 + somme_par_identifiant$ratio_vit_b12)/23)*100;
+mean(somme_par_identifiant$MAR, na.rm=TRUE)
+
+### Ratio pour le MER ----------------------------------------
+# Définir une fonction pour calculer le ratio
+somme_par_identifiant$ratio_ags <- ifelse((somme_par_identifiant$ags_kcal_2000 / 12 < 1),( 1), (somme_par_identifiant$ags_kcal_2000/ 12 ))
+somme_par_identifiant$ratio_sodium  <- ifelse(somme_par_identifiant$sodium_mg_2000/ 2300 < 1, 1, somme_par_identifiant$sodium_mg_2000/ 2300 )
+somme_par_identifiant$ratio_sucre_aj<- ifelse(somme_par_identifiant$sucre_aj_g_appro_2000/100 < 1, 1, somme_par_identifiant$sucre_aj_g_appro_2000/100)
+
+### Calcul du MER -----------------------------------
+somme_par_identifiant$MER <- (((somme_par_identifiant$ratio_ags + somme_par_identifiant$ratio_sodium + somme_par_identifiant$ratio_sucre_aj)*100)/3)-100
+mean(somme_par_identifiant$MER)
+mean(somme_par_identifiant$MAR)
+
+
+somme_par_identifiant$t_ratio_prot <- (somme_par_identifiant$proteines_kcal_2000 / 10)*100
+somme_par_identifiant$t_ratio_fibre <-(somme_par_identifiant$fibres_g_2000 / 30)*100
+somme_par_identifiant$t_ratio_lino <-(somme_par_identifiant$ag_18_2_lino_g_2000/ 4 )*100# (!!)
+somme_par_identifiant$t_ratio_alphalino <-(somme_par_identifiant$ag_18_3_a_lino_g_2000/ 1)*100
+somme_par_identifiant$t_ratio_dha <-(somme_par_identifiant$ag_20_6_dha_g_2000 / 0.25 )*100
+somme_par_identifiant$t_ratio_potassium <-(somme_par_identifiant$potassium_mg_2000 / 3500 )*100
+somme_par_identifiant$t_ratio_calcium <-(somme_par_identifiant$calcium_mg_2000 / 950 )*100
+somme_par_identifiant$t_ratio_selenium <-(somme_par_identifiant$selenium_mcg_2000 / 70)*100
+somme_par_identifiant$t_ratio_iode <-(somme_par_identifiant$iode_mcg_2000 / 150 )*100
+somme_par_identifiant$t_ratio_vit_d <-(somme_par_identifiant$vitamine_d_mcg_2000 / 15)*100
+somme_par_identifiant$t_ratio_vit_c <-(somme_par_identifiant$vitamine_c_mg_2000 / 110)*100
+somme_par_identifiant$t_ratio_vit_b2 <-(somme_par_identifiant$vitamine_b2_mg_2000 / 1.6)*100
+somme_par_identifiant$t_ratio_vit_b12 <-(somme_par_identifiant$vitamine_b12_mcg_2000 / 4 )*100
+somme_par_identifiant$t_ratio_vit_b9 <-(somme_par_identifiant$vitamine_b9_mcg_2000 / 330)*100
+somme_par_identifiant$t_ratio_magnesium <-  (somme_par_identifiant$magnesium_mg_2000/ 340)*100
+somme_par_identifiant$t_ratio_fer <-  (somme_par_identifiant$fer_mg_2000 / 12.25)*100
+somme_par_identifiant$t_ratio_cuivre <-  (somme_par_identifiant$cuivre_mg_2000 / 1.7 )*100
+somme_par_identifiant$t_ratio_zinc <- ( somme_par_identifiant$zinc_mg_2000/ 10.5)*100
+somme_par_identifiant$t_ratio_vit_a <- ( somme_par_identifiant$vit_a_mcg_2000/ 700 )*100
+somme_par_identifiant$t_ratio_vit_e <-  (somme_par_identifiant$vitamine_e_mg_2000/ 9.5)*100
+somme_par_identifiant$t_ratio_vit_b1 <-  (somme_par_identifiant$vitamine_b1_mg_2000/ 0.84)*100 # #0.1 EN 239 KCAL POUR CONVERTIR MJ ET EN J0. 
+somme_par_identifiant$t_ratio_vit_b3 <-  (somme_par_identifiant$vitamine_b3_mg_2000/13.4)*100##1.6*239 KCAL #14.9t_ratio 18.5
+somme_par_identifiant$t_ratio_vit_b6 <-  (somme_par_identifiant$vitamine_b6_mg_2000/ 1.65)*100
+somme_par_identifiant$t_ratio_ags <- (somme_par_identifiant$ags_kcal_2000 / 12 )*100
+somme_par_identifiant$t_ratio_sodium  <-(somme_par_identifiant$sodium_mg_2000/ 2300 )*100
+somme_par_identifiant$t_ratio_sucre_aj <-(somme_par_identifiant$sucre_aj_g_appro_2000/100)*100
+
+
+somme_par_identifiant$HENI <- NA
+
+ratio_cols <- c("t_ratio_prot", "t_ratio_fibre", "t_ratio_lino", "t_ratio_alphalino", 
+                "t_ratio_dha", "t_ratio_potassium", "t_ratio_calcium", "t_ratio_selenium", 
+                "t_ratio_iode", "t_ratio_vit_d", "t_ratio_vit_c", "t_ratio_vit_b2", 
+                "t_ratio_vit_b12", "t_ratio_vit_b9", "t_ratio_magnesium", "t_ratio_fer", 
+                "t_ratio_cuivre", "t_ratio_zinc", "t_ratio_vit_a", "t_ratio_vit_e", 
+                "t_ratio_vit_b1", "t_ratio_vit_b3", "t_ratio_vit_b6", "t_ratio_ags", 
+                "t_ratio_sodium", "t_ratio_sucre_aj")
+
+moyennes_ratios <- colMeans(somme_par_identifiant[, ratio_cols], na.rm = TRUE)
+table_ratios <- data.frame(Ratio = names(moyennes_ratios), Moyenne = moyennes_ratios)
+print(table_ratios)
 
 
 
+#CALCUL des indicateurs environnementaux --------------------------------------
+df_long <- FFQ_POIDS_Int %>%
+  pivot_longer(cols = -Identifiant, names_to = "FFQ_TI", values_to = "Poids") 
 
-FFQ_KCAL$UC_TI <- NULL
+df_long <- df_long %>%
+  filter(!is.na(Poids))
 
+df_long <- inner_join(df_long, CALNUT, by= "FFQ_TI", relationship = "many-to-many")
+
+  ## Sélection des colonnes à transformer----------------
+colonnes_a_transformer <- c("climat", "couche_ozone","ions","ozone",	"partic",	"acid",	"eutro_terr", "eutro_eau","eutro_mer",	"sol",	"toxi_eau",	"ress_eau",	"ress_ener",	"ress_min")
+
+#  On multiplie par le poids de l'aliment et par 1000 pour convertir au kg pour chaque indicateur env 
+df_long <- df_long %>%
+  mutate(across(all_of(colonnes_a_transformer),~ . * Poids , .names = "{.col}_env" ))
+
+df_long$climat_env <- df_long$climat_env*1000
+  ## Somme par ID des résultats de chaque aliment  --------------------------
+
+colonnes_a_sommer_env <- grep("_env$", names(df_long), value = TRUE)
+df_selected <- df_long[, colonnes_a_sommer_env, drop = FALSE]
+
+somme_par_identifiant_env <- df_long %>%
+  group_by(Identifiant) %>%
+  summarise(across(all_of(colonnes_a_sommer_env), ~ sum(.x, na.rm = TRUE)))
+
+
+# Filtres pour exclure les FFQ abérrants----------------------------
+#temp <- metadata[, c('Identifiant', 'Sexe')]
+#temp$borne_inf <- ifelse((temp$Sexe=="Femme"), (500),(800))
+#temp$borne_sup <-ifelse((temp$Sexe=="Femme"), (3500),(4000)) 
+#temp2 <- somme_par_identifiant[, c('Identifiant', 'SOMME_FFQ_KCAL')]
+#temp <- left_join(temp, temp2, by="Identifiant")
+#temp <- temp %>%
+#  filter( borne_inf <= SOMME_FFQ_KCAL  & SOMME_FFQ_KCAL <= borne_sup )
+#Liste <- unique(temp$Identifiant)
+#metadata <- subset(metadata, Identifiant %in% Liste)
+#Frame <- subset(Frame, Identifiant %in% Liste)
+#Frame_bis <- subset(Frame_bis, Identifiant %in% Liste)
+#Poids_modifie <- subset(Poids_modifie, Identifiant %in% Liste)
+#FFQ_POIDS <- subset(FFQ_POIDS, Identifiant %in% Liste)
+#FFQ_KCAL <- subset(FFQ_KCAL, Identifiant %in% Liste)
+#somme_par_identifiant <- subset(somme_par_identifiant, Identifiant %in% Liste)
+#somme_par_identifiant_env <- subset(somme_par_identifiant_env, Identifiant %in% Liste)
+###Liste traitement#### 
+#Exclusion des Opticourses -----------------------------
+identifiants <- c("LE012", "LE017", "LE021", "LE028", "LE037", "LE040", "LE043", "LE045", "LE049", "LE058", 
+                 "LE059", "LE064", "LE068", "LE076", "LE077", "LE083", "LE086", "LE087", "LE099", "LE129", 
+                 "LE130", "LE142", "LE146", "LE147", "LE149", "LE152", "LE158", "LE163", "LE169", "LE170", 
+                 "LE176", "LE177", "LE184", "LE191", "LE205", "PS287", "LE208", "LE210", "LE224", "LE232", 
+                 "LE246", "LE249", "PS001", "PS003", "PS014", "PS016", "PS023", "PS026", "PS041", "PS044", 
+                 "PS046", "PS049", "PS058", "PS059", "PS061", "PS072", "PS075", "PS094", "PS104", "PS106", 
+                 "PS110", "PS116", "PS137", "PS143", "PS158", "PS164", "PS165", "PS168", "PS169", "PS178", 
+                 "PS180", "PS190", "PS193", "PS203", "PS204", "PS206", "PS207", "PS210", "PS215", "PS218", 
+                 "PS221", "PS237", "PS259", "PS265", "PS269", "PS272", "PS277", "PS282")
+
+metadata <- subset(metadata, !(Identifiant %in% identifiants))
+Frame_bis <- subset(Frame_bis, !(Identifiant %in% identifiants))
+Poids_modifie <- subset(Poids_modifie, !(Identifiant %in% identifiants))
+FFQ_POIDS <- subset(FFQ_POIDS, !(Identifiant %in% identifiants))
+FFQ_KCAL <- subset(FFQ_KCAL, !(Identifiant %in% identifiants))
+somme_par_identifiant<- subset(somme_par_identifiant, !(Identifiant %in% identifiants))
+somme_par_identifiant_env <- subset(somme_par_identifiant_env, !(Identifiant %in% identifiants))
 
 #Constitution du tableau final ------------------------------------------------
 FFQ_id <- metadata  
 #On établit les listes de traitement en fonction du respect de l'envoi de chèques
-
+if (campaign == "23-02" |campaign == "24-03") {
+  new_df <- Recap_envoi_cheques[, c("Identifiant", "Montant mensuel total")]
+  FFQ_id<- left_join(FFQ_id, new_df, by='Identifiant')
+  FFQ_id$groupe <- ifelse (!is.na(FFQ_id$`Montant mensuel total`),(1),(0))
+  FFQ_id$`Montant mensuel total` <- NULL}
 if (campaign == "22-11" |campaign == "23-11") { FFQ_id$Periode <-0   }
 if (campaign == "23-02" |campaign == "24-03") { FFQ_id$Periode <-1   }
 FFQ_id$Mesure <- "FFQ"
 FFQ_id <- inner_join(FFQ_id, FFQ_POIDS, by='Identifiant')
 FFQ_id <- inner_join(FFQ_id, FFQ_KCAL, by='Identifiant')
-
+new_df <- somme_par_identifiant[, c("Identifiant", "MAR", "MER", "t_ratio_prot", "t_ratio_fibre", "t_ratio_lino", "t_ratio_alphalino", 
+                                    "t_ratio_dha", "t_ratio_potassium", "t_ratio_calcium", "t_ratio_selenium", 
+                                    "t_ratio_iode", "t_ratio_vit_d", "t_ratio_vit_c", "t_ratio_vit_b2", 
+                                    "t_ratio_vit_b12", "t_ratio_vit_b9", "t_ratio_magnesium", "t_ratio_fer", 
+                                    "t_ratio_cuivre", "t_ratio_zinc", "t_ratio_vit_a", "t_ratio_vit_e", 
+                                    "t_ratio_vit_b1", "t_ratio_vit_b3", "t_ratio_vit_b6", "t_ratio_ags", 
+                                    "t_ratio_sodium", "t_ratio_sucre_aj", "HENI")]
+FFQ_id <- inner_join(FFQ_id, new_df, by='Identifiant')
+FFQ_id <- inner_join(FFQ_id, somme_par_identifiant_env, by='Identifiant')
+FFQ_id <- subset(FFQ_id, SOMME_FFQ_KCAL > 0)
 
 
 # TELECHARGEMENT ----------------------------
@@ -1276,17 +1719,19 @@ writeData(wb, sheet = "Frequences_corrigées", Frame)
 addWorksheet(wb, "Poids_corrigés")
 writeData(wb, sheet = "Poids_corrigés", FFQ_POIDS_Int)
 
+
 if (campaign == "22-11") {
-  saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_22.xlsx")))
+  saveWorkbook(wb,(paste0("Données analysées - Article N°1 chèques/Fichiers_nettoyés/Fichiers_prétraités/FFQ_Tableaux_nov_22.xlsx")))
 }else{ 
   if (campaign == "23-02") {
-    saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_23.xlsx"))) 
+    saveWorkbook(wb,(paste0("Données analysées - Article N°1 chèques/Fichiers_nettoyés/Fichiers_prétraités/FFQ_Tableaux_mars_23.xlsx"))) 
   } else {
     if (campaign == "23-11") {
-      saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_nov_23.xlsx"))) 
+      saveWorkbook(wb,(paste0("Données analysées - Article N°1 chèques/Fichiers_nettoyés/Fichiers_prétraités/FFQ_Tableaux_nov_23.xlsx"))) 
     } else { 
-      saveWorkbook(wb,(paste0("C:/Users/denieul-barbot/Dropbox/Thèse/Article_3/Données analyses - Article N°2 FFQvsCarnets/Fichiers nettoyés/Fichiers prétraités/FFQ_Tableaux_mars_24.xlsx")))  
+      saveWorkbook(wb,(paste0("Données analysées - Article N°1 chèques/Fichiers_nettoyés/Fichiers_prétraités/FFQ_Tableaux_mars_24.xlsx")))  
     }}}
+
 
 
 
