@@ -4,7 +4,7 @@
 #          Same structure and logic, but all food variables are expressed in
 #          kilocalories (_Kcal suffix) instead of grams (_Poids suffix).
 #          No unit conversion is applied (multiplier = 1).
-
+#
 
 
 
